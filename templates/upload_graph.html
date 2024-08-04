@@ -1,0 +1,367 @@
+{% block content %}
+{% load static %}
+<style>
+    body {
+ 
+        background-color: rgba(81, 40, 132, 1);
+        background-image: linear-gradient(135deg, rgba(81, 40, 132, 1), rgba(169, 51, 255, 1));
+        font-family: Arial, sans-serif;
+        margin: 0;
+        margin-top: 75px;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .container {
+        background-color: #fff; 
+        padding: 20px;
+        margin: 10px;
+        width: 45%;
+    }
+
+
+    .form-container.highlight {
+        background-color: #f0f0f0; 
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-container .btn {
+        margin-top: 20px;
+    }
+
+    .text-container {
+        order: 2; 
+        background-color: rgba(255, 253, 250, 1);
+    }
+
+    .text-container-bottom {
+        order: 3; 
+        background-color: rgba(255, 253, 250, 1);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            width: 90%; 
+        }
+    }
+</style>
+{% include 'navigationbar.html' %}
+
+<div class="container form-container" id="formContainer">
+    {% if not readGraph %}
+    <h2>Upload File</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn btn-primary">Upload File</button>
+        <input type="hidden" name="algo" value = "{{ algo }}">
+    </form>
+    {% endif %}
+    {% if readGraph %}
+    <h3>File Successfully Uploaded!</h3>
+    {% endif %}
+</div>
+
+
+{% if readGraph or readString %}
+<div class="container text-container">
+    {% if algo == 'Dijkstra' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Dijkstra</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="DijkNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'Kruskal' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Kruskal</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="KruskalNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'Knapsack' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Knapsack</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="KnapsackNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'KMP' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>KMP</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="KMPNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'Interval' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Interval</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="IntervalNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'Bellmanford' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Bellmanford</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="BellmanFordNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+    {% elif algo == 'LCS' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>LCS</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="LCSNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+    {% elif algo == 'Huffman' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Huffman</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="HuffmanNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'FloydWarshall' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>FloydWarshall</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="FloydWarshallNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+    {% elif algo == 'BubbleSort' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Bubble Sort</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="BubbleNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+    {% elif algo == 'InsertionSort' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Insertion Sort</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="InsertionNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+        
+    {% elif algo == 'UnionFind' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>UnionFind</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="UnionFindNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+    {% elif algo == 'Trie' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Trie</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="TrieNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+        {% elif algo == 'BWT' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>BWT</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="BWTNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+        {% elif algo == 'Rabinkarp' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>RabinKarp</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="RabinKarpNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+        {% elif algo == 'Prims' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Prims</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="PrimsNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+
+
+        {% elif algo == 'BoyerMoore' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>BoyerMoore</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="BoyerMooreNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+        {% elif algo == 'FisherYates' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>FisherYates</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="FisherYatesNotPreset">
+            <input type="submit" value="Submit"> 
+        </form> 
+        {% elif algo == 'CountSort' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Count Sort</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="CountNotPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+
+
+        {% elif algo == 'MergeSort' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Merge Sort</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="MergeNotPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+
+        {% elif algo == 'MaxIncrease' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Max Increase</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="MaxIncreaseNotPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+
+
+        {% elif algo == 'QuickSort' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Quick Sort</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="QuickSortNotPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+
+        {% elif algo == 'QuickSelect' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Quick Select</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="QuickSelectNotPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+
+
+
+        {% elif algo == 'MaxIndependentSet' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Max Independent Set</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="MISPreset">
+            <input type="submit" value="Submit"> 
+        </form>
+    {% endif %}
+
+
+
+
+
+
+</div>
+{% elif not readGraph %}
+<div class="container text-container">
+    <h2>Instructions for Adjacency List File Upload:</h2>
+    <p>Where <code>x</code> is a node, <code>y</code> is the node an edge reaches from <code>x</code>, and <code>w</code> is the weight of the edge.
+    <pre>
+    x y:w y:w y:w
+    x y:w y:w
+    x y:w
+    x y:w y:w y:w y:w
+    </pre>
+    <p> For undirected graphs, ensure both directions are included.</p> For example:</p>
+    <pre>
+        1 2:3
+        2 1:3
+    </pre>
+    Example:
+    <pre>
+        0 1:5 3:10 4:9
+        1 2:2 3:3
+        2 0:4 
+        3 4:2
+        4 2:0
+    </pre>
+    <h2>Instructions for Encoding File Upload:</h2>
+    <p>List the count of each character seperated by a colon. 
+    <p>Example:
+    <pre>
+    a:5 b:9 c:12 d:13 e:16
+    </pre>
+
+    <h2>Instructions for KMP File Upload:</h2>
+    <p>List the full text and the pattern in the next line. 
+    <p>Example:
+    <pre>
+        ABABDABACDABABCABAB
+        ABABCABAB
+    </pre>
+
+    <h2>Instructions for Interval Scheduling File Upload:</h2>
+    <p>List the start and end times sepearted by a colon.
+    <p>Example:
+    <pre>
+        1:3 2:4 3:6 5:7 8:9 5:9
+    </pre>
+
+    <h2>Instructions for LCS File Upload:</h2>
+    <p>List the two patterns on seperate lines.
+    <p>Example:
+    <pre>
+        MZJAWXU
+        XMJYAUZ
+    </pre>
+</div>
+
+
+{% endif %}
+
+    {% if displayImage %}
+    <div class="container text-container-bottom">
+    <h2>Uploaded Graph</h2>
+    <p>Number of Nodes: {{ numNodes }}</p>
+    <img src="{{ MEDIA_URL }}graph/upload/{{ filename }}" alt="Uploaded Image" style="max-width: 100%; height: auto;">
+    {% endif %}
+
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

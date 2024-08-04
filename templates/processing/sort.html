@@ -1,0 +1,13 @@
+<table>
+    <tbody>
+        {% for item in data %}
+        <tr>
+            {% for num in item.0 %}
+            <td {% if forloop.counter0 == item.1 or forloop.counter0 == item.2 %}style="font-weight: bold; color: red;"{% endif %}>
+                {{ num }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

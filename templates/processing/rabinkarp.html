@@ -1,0 +1,21 @@
+<table>
+    <tr>
+      
+        <h2> Text = {{text}} </h2>
+        <h2> Pattern = {{pattern}} </h2>
+        <h2> Pattern found at index {{data}} </h2>
+        <tr>
+        {% for item in index %}
+            <th>{{item}}</th>
+        {% endfor %}
+        <tr>
+            <tr>
+        {% for item in text %}
+            <td>{{item}}</td>
+        {% endfor %}
+       
+    </tr>
+    
+    </tbody>
+</table>
+

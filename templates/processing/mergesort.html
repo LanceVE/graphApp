@@ -1,0 +1,19 @@
+<body>
+    <h1>Data Table</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Depth</th>
+                <th>Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for depth, values in sortDepth %}
+                <tr>
+                    <td>{{ depth }}</td>
+                    <td>{{ values|join:", " }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>

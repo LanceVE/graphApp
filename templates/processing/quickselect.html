@@ -1,0 +1,30 @@
+<body>
+    <h1>{{k}}th biggest Number</h1>
+    <h1>Quick Select Steps</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Array</th>
+                <th>Left Index</th>
+                <th>Right Index</th>
+                <th>Pivot Value</th>
+                <th>Pivot Index</th>
+                <th>Partition Indexes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for state in data %}
+            <tr>
+                <td>{{ forloop.counter0 }}</td>
+                <td>{{ state.array }}</td>
+                <td>{{ state.left }}</td>
+                <td>{{ state.right }}</td>
+                <td>{{ state.pivot }}</td>
+                <td>{{ state.pivot_index }}</td>
+                <td>{{ state.partition_indexes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>

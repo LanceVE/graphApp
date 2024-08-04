@@ -1,0 +1,68 @@
+
+Updated to Preset/Not Preset
+Dijkstra (Verified on two graphs)
+Kruskals
+0-1Knapsack 
+Floyd Warshall
+BWT
+CountSort
+BoyerMoore
+Longest Increasing
+FisherYates
+Prims
+Max Indepdent Set
+    -Progress seems to intensive
+Mergesort 
+Quick-Sort 
+    -May need more info?
+Quick-Select
+    -May need more info?
+    -Erroring sometimes? Maybe make the test array longer
+
+Huffman
+    -Implement Orginal MEssage and change to message not codes
+    -Implement Tree at each state of algorithm
+-KMP
+    -Fully Complete
+    -NOT SURE IF WE NEED MORE
+LCS 
+UnionFind
+RabinKarp
+Scheduling Coloring
+BellmanFord 
+    -STATES NOT FULLY WORKING.
+
+
+
+
+TODO
+Finish Instructions
+
+
+Add a link to Repo
+
+TOFIX
+
+copy format of interval greed to the other ones
+
+TODOs
+    -Visuals for Insertion/Bubble
+        -new htmls for insertion and bubbles
+
+
+
+
+
+Need more?
+LCS needs answer
+LIS
+CountSort
+KMP
+HuffmanEncoding
+Highlight the indexes in the table for quickselect/insertion/bubble
+
+
+    checked
+    insertionSort.py 
+    bubblesort.py
+    dijkstra.py

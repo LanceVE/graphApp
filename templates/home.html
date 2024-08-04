@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Navigation Bar</title>
+	{% comment %} {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static '/styles/styles.css' %}"> {% endcomment %}
+</head>
+<body>
+	<nav class="navbar">
+		<div class="navdiv">
+			<div class="logo"><a href="#">Algorithm Tables</a> </div>
+            <li><a href="/new_home">New Home</a></li> 
+	</nav>
+	
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            {{ form }}
+            {{ formCSV }}
+            <input type="submit" value="submit">
+        </form>
+</body>
+</html>

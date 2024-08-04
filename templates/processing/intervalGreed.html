@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intervals and Optimal Meetings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+            box-sizing: border-box; 
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            max-width: 100%; 
+            box-sizing: border-box; 
+        }
+        
+        .box {
+            width: 100%;
+            max-width: 600px;
+            padding: 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+        }
+        
+        .box h2 {
+            margin-top: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .number-line {
+            position: relative;
+            height: 60px; /* Reduced height to reduce vertical space */
+            margin-top: 20px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+        }
+        
+        .number-line .tick {
+            position: absolute;
+            height: 30px; /* Reduced height for shorter ticks */
+            width: 1px;
+            background-color: #333;
+            bottom: 0;
+        }
+        
+        .number-line .label {
+            position: absolute;
+            bottom: 30px; /* Adjusted to match the reduced tick height */
+            font-size: 10px; /* Reduced font size for smaller labels */
+        }
+        
+        .number-line .dot {
+            position: absolute;
+            width: 8px; /* Reduced dot width */
+            height: 8px; /* Reduced dot height */
+            border-radius: 50%;
+            background-color: #333; /* Added color for visibility */
+            transform: translate(-50%, -50%); /* Center the dot */
+            z-index: 1;
+        }
+        .box ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0; /* Remove default margin */
+        }
+        
+        .box ul li {
+            margin: 5px 0;
+        }
+        
+        .box ul li span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Intervals and Optimal Meetings</h1>
+    <div class="container">
+        <div class="box">
+            <h2>Total Intervals</h2>
+            <table id="intervalsTable">
+                <thead>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interval in data %}
+                        <tr>
+                            <td>{{ interval.0 }}</td>
+                            <td>{{ interval.1 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="box">
+            <h2>Optimal Meetings</h2>
+            <table id="optimalTable">
+                <thead>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interval in optimal %}
+                        <tr>
+                            <td>{{ interval.0 }}</td>
+                            <td>{{ interval.1 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="box">
+            <h2>Legend</h2>
+            <ul id="legend">
+                <!-- Legend items will be added dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Number Line for Total Intervals -->
+
+    <h2>Total Intervals </h2>
+    <div class="number-line" id="totalNumberLine">
+        
+    </div>
+    <h2>Optimal Intervals </h2>
+    <!-- Number Line for Optimal Meetings -->
+    <div class="number-line" id="optimalNumberLine">
+       
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Django template variables converted to JavaScript arrays
+            const data = [
+                {% for interval in data %}
+                    ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+        
+            const optimal = [
+                {% for interval in optimal %}
+                    ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+        
+            const totalNumberLine = document.getElementById('totalNumberLine');
+            const optimalNumberLine = document.getElementById('optimalNumberLine');
+        
+            // Convert time to minutes
+            function timeToMinutes(time) {
+                const [hours, minutes] = time.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+        
+            // Convert minutes to time string
+            function minutesToTime(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+            }
+        
+            // Generate a random color
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+        
+            // Create number line ticks and dots
+            function createNumberLine(container, intervals, dotClass, colorMap) {
+                const startMinutes = timeToMinutes('00:00');
+                const endMinutes = timeToMinutes('24:00');
+                const intervalMinutes = 60; // Interval for ticks
+        
+                // Create ticks
+                for (let minutes = startMinutes; minutes <= endMinutes; minutes += intervalMinutes) {
+                    const tick = document.createElement('div');
+                    tick.className = 'tick';
+                    tick.style.left = `${(minutes / endMinutes) * 100}%`;
+                    container.appendChild(tick);
+        
+                    const label = document.createElement('div');
+                    label.className = 'label';
+                    label.style.left = `${(minutes / endMinutes) * 100}%`;
+                    label.textContent = minutesToTime(minutes);
+                    container.appendChild(label);
+                }
+        
+                // Create dots for intervals
+                intervals.forEach((interval, index) => {
+                    // Assign or retrieve color
+                    let color;
+                    if (dotClass === 'total') {
+                        color = getRandomColor(); // New color for total intervals
+                        colorMap[index] = color; // Store color for future reference
+                    } else {
+                        color = colorMap[index] || getRandomColor(); // Use stored color for optimal meetings
+                    }
+        
+                    const start = timeToMinutes(interval[0]);
+                    const end = timeToMinutes(interval[1]);
+                    const startPosition = (start / endMinutes) * 100;
+                    const endPosition = (end / endMinutes) * 100;
+        
+                    // Create dot for start of interval
+                    const dotStart = document.createElement('div');
+                    dotStart.className = `dot ${dotClass}`;
+                    dotStart.style.backgroundColor = color;
+                    dotStart.style.left = `${startPosition}%`;
+                    dotStart.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; // Move optimal dots higher
+                    dotStart.title = `${interval[0]}`; // Tooltip
+                    container.appendChild(dotStart);
+        
+                    // Create dot for end of interval
+                    const dotEnd = document.createElement('div');
+                    dotEnd.className = `dot ${dotClass}`;
+                    dotEnd.style.backgroundColor = color;
+                    dotEnd.style.left = `${endPosition}%`;
+                    dotEnd.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; // Move optimal dots higher
+                    dotEnd.title = `${interval[1]}`; // Tooltip
+                    container.appendChild(dotEnd);
+        
+                    // Add color to legend for total intervals
+                    if (dotClass === 'total') {
+                        const legendItem = document.createElement('li');
+                        legendItem.innerHTML = `<span style="background-color: ${color};"></span>Interval ${index + 1}`;
+                        document.getElementById('legend').appendChild(legendItem);
+                    }
+                });
+            }
+        
+            // Map of index to color
+            const colorMap = {};
+        
+            // Create number line for total intervals
+            createNumberLine(totalNumberLine, data, 'total', colorMap);
+        
+            // Create number line for optimal intervals with consistent colors
+            createNumberLine(optimalNumberLine, optimal, 'optimal', colorMap);
+        });
+    </script>
+</body>
+</html>

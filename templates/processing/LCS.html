@@ -1,0 +1,16 @@
+<table>
+    <thead>
+        <tr>
+            <th colspan="{{ data.0|length }}">{{ "LEN/DIR (Ties broken with 'U')" }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in data %}
+        <tr>
+            {% for cell in item %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

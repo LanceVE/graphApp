@@ -1,0 +1,33 @@
+<table border="1">
+    <h2>Original Word: {{ string }}</h2>
+    <tbody>
+        <tr>
+            <td>
+                
+                <table>
+                    <tbody>
+                        <th>Rotations</th>
+                        {% for item in data.0 %}
+                        <tr>
+                            <td>{{ item }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <tbody>
+                        <th>Sorted</th>
+                        {% for item in data.1 %}
+                        <tr>
+                            <td>{{ item }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+            <td>BWT Transform: {{ data.2 }}</td>
+        </tr>
+    </tbody>
+</table>

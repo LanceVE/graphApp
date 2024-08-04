@@ -1,0 +1,47 @@
+<table>
+    <thead>
+        <tr>
+            <th>Round</th>
+            <th colspan="{{ nodeCount }}">dist[]</th>
+            <th>distChange?</th>
+            <th colspan="{{ nodeCount }}">parent[]</th>
+        </tr>
+        
+        <tr>
+            <tr>
+                <th></th>
+                {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+            <th></th>
+  
+            {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>Start</th>
+                {% for item in vertexArr %}
+                   {% if item == startNode %}
+                        <td>0</td>
+                    {% else %}
+                        <td>Inf</td>
+                    {% endif %}
+                {% endfor %}
+            <th></th>
+            {% for item in vertexArr %}
+                    <td>Null</td>
+                {% endfor %}
+            </tr>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in data %}
+        <tr>
+            {% for cell in item %}
+                <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

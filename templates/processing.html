@@ -1,0 +1,93 @@
+
+{% block contents %}
+<style>
+    body {
+        background-color : rgba(81, 40, 132);
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-container {
+        margin: 100px auto 20px; 
+        padding: 21px;
+        background-color: rgba(255, 253, 250); 
+        border: 1px solid black;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 1400px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .message {
+        margin: 20px 0;
+        font-size: 18px;
+    }
+</style>
+
+{% include 'navigationbar.html' %}
+<div class="content-container">
+    {% if is_sorted %}
+    <p class="message">The list is sorted.</p>
+    {% else %}
+        {% if is_Dijk %}
+            {% include "processing/Dijk.html" %}
+        {% elif is_LCS %}
+            {% include "processing/LCS.html" %}
+        {% elif is_Kruskals %}
+            {% include "processing/kruskals.html" %}
+        {% elif is_Prims %}
+            {% include "processing/prims.html" %}
+        {% elif is_BF %}
+            {% include "processing/bf.html" %}
+        {% elif is_Huffman %}
+            {% include "processing/huffman.html" %}
+        {% elif is_IntervalGreed %}
+            {% include "processing/intervalGreed.html" %}
+        {% elif is_KMP %}
+            {% include "processing/KMP.html" %}
+        {% elif is_FloydWarshall %}
+            {% include "processing/floydwarshall.html" %}
+        {% elif is_sort %}
+            {% include "processing/sort.html" %}
+        {% elif is_Knapsack %}
+            {% include "processing/knapsack.html" %}
+        {% elif is_UnionFind %}
+            {% include "processing/union.html" %}
+        {% elif is_Trie %}
+            {% include "processing/trie.html" %}
+        {% elif is_BWT %}
+            {% include "processing/bwt.html" %}
+        {% elif is_BoyerMoore %}
+            {% include "processing/boyermoore.html" %}
+        {% elif is_RK %}
+            {% include "processing/rabinkarp.html" %}
+        {% elif is_FisherYate %}
+            {% include "processing/fisheryates.html" %}
+        {% elif is_CountSort %}
+            {% include "processing/countsort.html" %}
+        {% elif is_MergeSort %}
+            {% include "processing/mergesort.html" %}
+        {% elif is_MaxIncrease %}
+            {% include "processing/maxincrease.html" %}
+        {% elif is_QS %}
+            {% include "processing/quicksort.html" %}
+        {% elif is_QSelect %}
+            {% include "processing/quickselect.html" %}
+
+        {% elif is_MIS %}
+            {% include "processing/mis.html" %}
+        {% endif %}
+    {% endif %}
+</div>
+ {% endblock contents %} 

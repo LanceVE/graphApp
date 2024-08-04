@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+ 
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 253, 250);
+            border-bottom: 4px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000
+
+        }
+
+        
+        .navbar .home {
+            padding: 5px; 
+            margin: 0 10px; 
+            background-color: rgba(208,193,251);
+            border: 2px solid #000;
+            text-decoration: none;
+            display: inline-block; 
+            font-size: 18px; 
+            font-family: 'Marker Felt', fantasy;
+            cursor: pointer; 
+            color: #000; 
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            border-radius: 50%; 
+            line-height: 0;
+        }
+
+        .navbar .home i {
+            font-size: 24px; 
+        }
+
+        .navbar .home:hover {
+            background-color: rgba(81, 40, 132);
+            color: #fff; 
+            border-color: #000; 
+        }
+
+        .title {
+            flex-grow: 1; 
+            text-align: center; 
+            color: black;
+            font-size: 40px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.3); 
+            margin: 0 30px;
+            font-family: 'Playfair Display', serif; 
+            line-height: 1.2; 
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" class="home"><i class="fas fa-home"></i></a>
+        <div class="title">Algorithm Gallery</div>
+    </div>
+
+</body>
+</html>

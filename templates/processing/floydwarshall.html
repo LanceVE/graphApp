@@ -1,0 +1,54 @@
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            {% for item in nodeList %}
+                <th>{{ item }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <h2>Weight Matrix</h2>
+        {% for row in data %}
+            <tr>
+                {% for item in row %}
+                {% if forloop.first %}
+                    <th>{{ item }}</th>
+                {% else %}
+                    <td>{{ item }}</td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<br>
+<br><br>
+
+
+<table>
+    <thead>
+        <tr>
+            <h2>Parent Matrix</h2>
+            <th></th>
+            {% for item in nodeList %}
+                <th>{{ item }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in parent %}
+            <tr>
+                {% for item in row %}
+                {% if forloop.first %}
+                    <th>{{ item }}</th>
+                {% else %}
+                    <td>{{ item }}</td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

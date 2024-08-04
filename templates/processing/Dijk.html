@@ -1,0 +1,73 @@
+{% load static %}
+<div style="display: flex;">
+    <div style="flex: 1; text-align: center;">
+        <div>
+            <p>Original Graph</p>
+            <img src="{% static 'graphApp/images/' %}{{ image }}" alt="Graph Image 1" style="max-width: 75%; height: auto;">
+        </div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <div>
+            <p>MST</p>
+            <img src="{% static 'graphApp/images/' %}{{ imagemst }}" alt="Graph Image 2" style="max-width: 75%; height: auto;">
+        </div>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="{{ nodeCount }}">dist</th>
+            <th>open</th>
+            <th>closed</th>
+            <th colspan="{{ nodeCount }}">parent</th>
+        </tr>
+        
+        <tr>
+            <tr>
+                <th></th>
+                {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+            <th></th>
+            <th></th>
+            {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>At Start </th>
+                {% for item in vertexArr %}
+                    {% if item == startNode %}
+                        <td>0</td>
+                    {% else %}
+                        <td>inf</td>
+                    {% endif %}
+                {% endfor %}
+            <td>['{{ startNode|slice:"1:" }}']</td>
+            <th></th>
+            {% for item in vertexArr %}
+                    <td>Null</td>
+                {% endfor %}
+            </tr>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in data %}
+        <tr>
+            {% if forloop.parentloop.counter0 == 1 or forloop.parentloop.counter0 == 3 %}
+                {% for cell in item %}
+                    {% for sub_item in cell %}
+                        <th>{{ sub_item }}</th>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                {% for cell in item %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

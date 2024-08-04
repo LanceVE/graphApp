@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        body {
+            background-color : rgba(81, 40, 132);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0px;
+        }
+
+        .grid-container {
+            display: grid;
+            margin-top: px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding: 50px;
+            
+        }
+
+        .box {
+            position: relative;
+            z-index: 1;
+            width: 100%%;
+            height: 100%;
+            background-color: rgba(208,193,251);
+            border: 1px solid #black;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            box-shadow: 0 0 0 4px black; 
+            overflow: hidden; 
+            transition: box-shadow 0.3s ease;
+        }
+
+        .box-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 2 / 1; 
+
+            padding: 10px; 
+        }
+        
+        .box-content h2 {
+            margin: 0;
+            text-align: center;
+            font-size: 64px;
+            font-family: 'Marker Felt', fantasy;
+            flex: 1;
+        }
+        
+        .box .toggle-line {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(81, 40, 132);
+            z-index: 3;
+            cursor: pointer;
+            transition: width 0.3s ease;
+        }
+
+        .box:hover .toggle-line {
+            width: 50px; 
+        }
+
+        .box form {
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            position: absolute;
+            display: none; 
+            text-align: bottom;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            padding: 10px; 
+            background-color: rgba(196, 175, 235, 1); 
+            box-sizing: border-box;
+            z-index: 2;
+        }
+        
+
+      
+        .box.active form {
+            display: block; 
+        }
+
+        .box h2 {
+            margin-top: 0;
+        }
+
+        .box-content.hide {
+            display: none;
+        }
+
+        .box.inactive {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .highlight {
+            animation: pulse 1s infinite; 
+            background-color: rgba(255, 253, 250, 0.9);
+        }
+
+        .stop-pulse {
+            animation: none; 
+        }
+
+        .button-container {
+            display: flex;
+            position: sticky; 
+            top:50px;
+            width: 100%; 
+            height: auto; 
+            margin: 0;
+            padding: 10px; 
+            color: black;
+            z-index: 999; 
+        }
+        
+        
+        .button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: rgba(196, 175, 235, 1);
+            border: 2px solid #000; 
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px; 
+            font-family: 'Marker Felt', fantasy;
+            cursor: pointer;
+            color: #000; 
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+            border-radius: 8px; 
+        }
+        
+        .button:hover {
+            background-color: rgba(81, 40, 132); 
+            color: #fff; 
+            border-color: #000; 
+        }
+        .button.active-button {
+            background-color: rgba(81, 40, 132);
+            color: #fff;
+            border-color: #000;
+        }
+
+
+    </style>
+
+    </style>
+</head>
+<body>
+     {% include 'navigationbar.html' %}
+
+
+    <div class="button-container">
+        <button class="button" onclick="changeValue('mst')">MST</button>
+        <button class="button" onclick="changeValue('apsp')">APSP</button>
+        <button class="button" onclick="changeValue('comp')">Compression</button>
+        <button class="button" onclick="changeValue('string')">String</button>
+        <button class="button" onclick="changeValue('sort')">Sort</button>
+        <button class="button" onclick="changeValue('other')">Other</button>
+        <button class="button" onclick="changeValue('cancel')">Cancel</button>
+      </div>
+
+
+
+      
+      <div class="grid-container">
+
+        <div class="box" id="box6" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box6')"></div>
+            <div class="box-content">
+                <h2>Bellman-Ford</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Bellmanford" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="BellmanFordPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+        <div class="box" id="box23" data-category="string">
+            <div class="toggle-line" onclick="toggleForm('box23')"></div>
+            <div class="box-content">
+                <h2>Boyer-Moore</h2> 
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=BoyerMoore" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="BoyerMoorePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        <div class="box" id="box16" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box16')"></div>
+            <div class="box-content">
+                <h2>Bubble Sort</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=BubbleSort" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="BubblePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form> 
+        </div>
+
+        <div class="box" id="box18" data-category="comp">
+            <div class="toggle-line" onclick="toggleForm('box18')"></div>
+            <div class="box-content">
+                <h2>BWT</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=BWT" class="home">Upload String</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded String:</span>
+                <input type="hidden" name="BWTPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>  
+
+        <div class="box" id="box25" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box25')"></div>
+            <div class="box-content">
+                <h2>Count Sort</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=CountSort" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="CountPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        <div class="box" id="box1" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box1')"></div>
+            <div class="box-content">
+                <h2>Dijkstra</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Dijkstra" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded Graph:</span>
+                <input type="hidden" name="DijkPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form> 
+        </div>
+
+        <div class="box" id="box24" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box24')"></div>
+            <div class="box-content">
+                <h2>Fisher-Yates</h2> 
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=FisherYates" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="FisherYatesPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        <div class="box" id="box11" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box11')"></div>
+            <div class="box-content">
+                <h2>Floyd Warshall</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=FloydWarshall" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded Graph:</span>
+                <input type="hidden" name="FloydWarshallPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+        <div class="box" id="box8" data-category="comp">
+            <div class="toggle-line" onclick="toggleForm('box8')"></div>
+            <div class="box-content">
+                <h2>Huffman Encoding</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Huffman" class="home">Upload String</a>
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="HuffmanPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+        <div class="box" id="box17" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box17')"></div>
+            <div class="box-content">
+                <h2>Insertion Sort</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=InsertionSort" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="InsertionPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+        
+        <div class="box" id="box5" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box5')"></div>
+            <div class="box-content">
+                <h2>Interval Scheduling</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Interval" class="home">Upload Intervals</a>
+                <br></br>
+                <span>Pre-loaded Intervals:</span>
+                <input type="hidden" name="IntervalPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+        <div class="box" id="box4" data-category="string">
+            <div class="toggle-line" onclick="toggleForm('box4')"></div>
+            <div class="box-content">
+                <h2>KMP</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=KMP" class="home">Upload String & Pattern</a>
+                <br></br>
+                <span>Pre-loaded String & Pattern:</span>
+                <input type="hidden" name="KMPPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+
+        <div class="box" id="box2" data-category="mst">
+            <div class="toggle-line" onclick="toggleForm('box2')"></div>
+            <div class="box-content">
+                <h2>Kruskal</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Kruskal" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded Graph:</span>
+                <input type="hidden" name="KruskalPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+        <div class="box" id="box3" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box3')"></div>
+            <div class="box-content">
+                <h2>Knapsack</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=Knapsack" class="home">Upload Weights & Profits</a>
+                <br></br>
+                <span>Pre-loaded Weights and Profits:</span>
+                <input type="hidden" name="KnapsackPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+     
+     
+        
+        <div class="box" id="box7" data-category="string">
+            <div class="toggle-line" onclick="toggleForm('box7')"></div>
+            <div class="box-content">
+                <h2>LCS</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=LCS" class="home">Upload Strings</a>
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="LCSPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+        
+
+
+        <div class="box" id="box125" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box125')"></div>
+            <div class="box-content">
+                <h2>Longest Increasing Subsequence</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=MaxIncrease" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Preloaded Numbers:</span>
+                <input type="hidden" name="MaxIncreasePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+
+
+
+
+        <div class="box" id="box0025" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box0025')"></div>
+            <div class="box-content">
+                <h2>Max Independent Set</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=MaxIndependentSet" class="home">Upload Graph</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-loaded Graph:</span>
+                <input type="hidden" name="MISPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+
+        <div class="box" id="box22" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box22')"></div>
+            <div class="box-content">
+                <h2>Merge Sort</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=MergeSort" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Numbers:</span>
+                <input type="hidden" name="MergePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+        
+
+
+        <div class="box" id="box21" data-category="mst">
+            <div class="toggle-line" onclick="toggleForm('box21')"></div>
+            <div class="box-content">
+                <h2>Prims</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=Prims" class="home">Upload Graph</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Graph:</span>
+                <input type="hidden" name="PrimsPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        <div class="box" id="box25410" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box25410')"></div>
+            <div class="box-content">
+                <h2>Quick Select</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=QuickSelect" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="QuickSelectPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        <div class="box" id="box2511" data-category="sort">
+            <div class="toggle-line" onclick="toggleForm('box2511')"></div>
+            <div class="box-content">
+                <h2>Quick Sort</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=QuickSort" class="home">Upload Numbers</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-loaded: Numbers:</span>
+                <input type="hidden" name="QuickSortPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        
+
+        <div class="box" id="box20" data-category="string">
+            <div class="toggle-line" onclick="toggleForm('box20')"></div>
+            <div class="box-content">
+                <h2>Rabin-Karp</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=Rabinkarp" class="home">Upload Text/Pattern</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Text/Pattern:</span>
+                <input type="hidden" name="RabinKarpPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+        
+        
+
+       
+
+        <div class="box" id="box19" data-category="string">
+            <div class="toggle-line" onclick="toggleForm('box19')"></div>
+            <div class="box-content">
+                <h2>Trie</h2>
+            </div>
+            <form action="/processing/" method="post">
+                <a href="/graph/upload/?upload=Trie" class="home">Upload Words</a>
+                {% csrf_token %}
+                <br></br>
+                <span>Pre-Loaded Words:</span>
+                <input type="hidden" name="TriePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>  
+        </div>
+
+     
+      
+        <div class="box" id="box13" data-category="other">
+            <div class="toggle-line" onclick="toggleForm('box13')"></div>
+            <div class="box-content">
+                <h2>Union Find</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=UnionFind" class="home">Upload Operations</a>
+                <br></br>
+                <span>Pre-loaded Operations:</span>
+                <input type="hidden" name="UnionFindPreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
+
+    </div>
+
+<script>
+    
+    function changeValue(category) {
+        var allBoxes = document.querySelectorAll('.box');
+        allBoxes.forEach(function(box) {
+            box.classList.remove('highlight');
+        });
+    
+        var allButtons = document.querySelectorAll('.button');
+        allButtons.forEach(function(button) {
+            button.classList.remove('active-button');
+        });
+    
+        var graphBoxes = document.querySelectorAll('.box[data-category="' + category + '"]');
+        graphBoxes.forEach(function(box) {
+            box.classList.add('highlight');
+        });
+
+
+        if (category === 'cancel') {
+            return;
+        }
+    
+        var selectedButton = document.querySelector('.button[onclick*="' + category + '"]');
+        if (selectedButton) {
+            selectedButton.classList.add('active-button');
+        }
+    }
+    function toggleForm(boxId) {
+        var box = document.getElementById(boxId);
+        box.classList.toggle('active');
+        box.classList.toggle('stop-pulse'); 
+    
+        var allBoxes = document.querySelectorAll('.box');
+        allBoxes.forEach(function(item) {
+            if (item.id !== boxId) {
+                item.classList.toggle('inactive');
+                item.classList.remove('stop-pulse');
+            }
+        });
+    }
+</script>
+</body>
+</html>

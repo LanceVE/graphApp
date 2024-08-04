@@ -1,0 +1,44 @@
+
+{% load static %}
+<div style="display: flex;">
+    <div style="flex: 1; text-align: center;">
+        <div>
+            <p>Original Graph</p>
+            <img src="{% static 'graphApp/images/' %}{{ image }}" alt="Graph Image 1" style="max-width: 75%; height: auto;">
+        </div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <div>
+            <p>MST</p>
+            <img src="{% static 'graphApp/images/' %}{{ imagemst }}" alt="Graph Image 2" style="max-width: 75%; height: auto;">
+        </div>
+    </div>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>T</th>
+            <th>Sets</th>
+            <th>numSets</th>
+        </tr>
+        <tr>
+            
+            <th>Initially:</th>
+            <th></th>
+            <td>Null</td>
+            <td>{% for item in sets %}{{ item }}{% endfor %}</td>
+            <td>{{ numSets }}</td>
+        </tr>
+    </thead>
+    <tbody>
+         {% for item in data %}
+        <tr>
+            {% for cell in item %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

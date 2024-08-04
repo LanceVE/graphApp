@@ -1,0 +1,24 @@
+<table>
+    <tr>
+        <th>P[i]</th>
+        {% for item in text %}
+            <th>{{item}}</th>
+        {% endfor %}
+       
+    </tr>
+    <tr>
+        <th>i</th>
+        {% for item in numbers %}
+            <th>{{item}}</th>
+        {% endfor %}
+    </tr>
+
+    <tbody>
+        <tr>
+            <th>II[i]</th>
+            {% for item in fail %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .table-container {
+            margin-bottom: 20px; /* Adjust the value as needed */
+        }
+
+        .centered-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .centered-table th, .centered-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+    
+    </style>
+</head>
+<body>
+    <table>
+        <tbody>
+            <tr>
+                <td>i</td> 
+                {% for i in n %}
+                    <td>{{ i }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>#</td>
+                {% for num in numbers %}
+                    <td>{{ num }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-container">
+        <table class="centered-table">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Possible Majority</th>
+                    <th>Count of Possible Majority</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                    <tr>
+                        {% for sub_item in item %}
+                            <td>{{ sub_item }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

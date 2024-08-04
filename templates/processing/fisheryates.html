@@ -1,0 +1,31 @@
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            {% if data %}
+                {% with data.0 as first_row %}
+                    {% for i in first_row %}
+                        <th>Index {{ forloop.counter0 }}</th>
+                    {% endfor %}
+                {% endwith %}
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <th>Randomized Positions (Back to front): {{ forloop.counter}}</th>
+            {% for item in row %}
+                <td>{{ item }}</td>
+            {% endfor %}
+
+        </tr>
+        {% endfor %}
+        <td colspan="{{ row|length }}">All Sorted</td>
+        {% for item in full_Randomized %}
+                <td>{{ item }}</td>
+            {% endfor %}
+
+    </tbody>
+</table>
+
