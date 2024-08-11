@@ -102,6 +102,7 @@ def new_processing_view(request):
     if request.method == 'POST':
         if 'DijkPreset' in request.POST:
             g, nodeCount = graphreader('HomePage/samplefiles/dijkstra2.txt')
+
             data, nodeCount, startingNode, filename, filename2 = callDijkstra(g, nodeCount)
             vStartNode = 'v'+ startingNode
             is_Dijk = True
@@ -312,16 +313,16 @@ def new_processing_view(request):
             return render(request, 'processing.html', {'code_map':code_map, 'encoded_message':encoded_message, 'original_message':original_message, 'is_Huffman': is_Huffman})
         elif 'LCSPreset' in request.POST:
             seq1, seq2 = read2LineText('HomePage/samplefiles/LCS.txt')
-            data = callLCS(seq1, seq2)
+            data, LCS = callLCS(seq1, seq2)
             is_LCS = True
-            return render(request, 'processing.html', {'data':data, 'is_LCS': is_LCS})
+            return render(request, 'processing.html', {'data':data, 'is_LCS': is_LCS, 'LCS':LCS})
         elif 'LCSNotPreset' in request.POST:
             filename = request.POST.get('filenameNoTxt')
             filenametxt = filename + '.txt'
             seq1, seq2 = read2LineText('media/graph/upload/' + filenametxt)
-            data = callLCS(seq1, seq2)
+            data, LCS = callLCS(seq1, seq2)
             is_LCS = True
-            return render(request, 'processing.html', {'data':data, 'is_LCS': is_LCS})
+            return render(request, 'processing.html', {'data':data, 'is_LCS': is_LCS, 'LCS':LCS})
         elif 'FloydWarshallPreset' in request.POST:
             g, nodeCount = graphreader('HomePage/samplefiles/dijkstra.txt')
             data, parent, nodeList = callFloydWarshall(g, nodeCount)
@@ -559,7 +560,56 @@ def new_processing_view(request):
             sets = [f"{{{i}}}" for i in range(numSets + 1)]
             return render(request, 'processing.html', {'data':data, 'is_MIS': is_MIS, 'image':filename, 'imageMIS':filenameMIS })
             # 'numSets':numSets, 'sets':sets, 'uniqueEdges':uniqueEdges, 'image':filename, 'imagemst':filename2,
-
+        elif 'DijkstraInteractivePreset' in request.POST:
+            g, nodeCount = graphreader('HomePage/samplefiles/dijkstra2.txt')
+            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount)
+            filenameState = [filename] + filenameIteration
+            vStartNode = 'v'+ startingNode
+            is_DijkInteractive = True
+            nodesplit = []
+            for item in data:
+                nodesplit_item = []
+                for index, cell in enumerate(item):
+                    if index == 1 or index == 4:
+                        if isinstance(cell, list):
+                            for sub_item in cell:
+                                nodesplit_item.append(str(sub_item))
+                        else:
+                            nodesplit_item.append(str(cell))
+                    else:
+                        nodesplit_item.append(cell)
+                nodesplit.append(nodesplit_item)
+            data = nodesplit
+            vertexArr = []
+            for i in range(nodeCount):
+                vertexArr.append("v" + str(i))
+            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'image':filename, 'imagemst':filename2, 'filenameState':filenameState})
+        elif 'DijkstraInteractiveNotPreset' in request.POST:
+            filename = request.POST.get('filenameNoTxt')
+            filenametxt = filename + '.txt'
+            g, nodeCount = graphreader('media/graph/upload/' + filenametxt)
+            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount)
+            filenameState = [filename] + filenameIteration
+            vStartNode = 'v'+ startingNode
+            is_DijkInteractive = True
+            nodesplit = []
+            for item in data:
+                nodesplit_item = []
+                for index, cell in enumerate(item):
+                    if index == 1 or index == 4:
+                        if isinstance(cell, list):
+                            for sub_item in cell:
+                                nodesplit_item.append(str(sub_item))
+                        else:
+                            nodesplit_item.append(str(cell))
+                    else:
+                        nodesplit_item.append(cell)
+                nodesplit.append(nodesplit_item)
+            data = nodesplit
+            vertexArr = []
+            for i in range(nodeCount):
+                vertexArr.append("v" + str(i))
+            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'image':filename, 'imagemst':filename2, 'filenameState':filenameState})
 
     else:
         return HttpResponse('Invalid method or action')
@@ -596,6 +646,7 @@ def callBoyerMoore(numbers, n):
     original = numbers[:]
     states, candidate = isMajority(numbers, n)
     print(states)
+    print(candidate)
     return states, candidate
 
 def callFisherYates(numbers, n):
@@ -609,8 +660,8 @@ def callRabinKarp(text, pattern, q):
     return data
 
 def callLCS(seq1, seq2):
-    LCS = lcs(seq1, seq2)
-    return LCS
+    data, LCS  = lcs(seq1, seq2)
+    return data, LCS
 
 def callKnapsackDP(W, weight, profit, n):
     global t 
@@ -657,7 +708,6 @@ def callBellmanFord(g, nodeCount):
 
 def callPrims(g, nodeCOunt):
     g, nodeCount = graphreader('HomePage/samplefiles/prims.txt')
-
     data, mst = prims(g)
     mstStr = [(str(min(edge)), str(max(edge))) for edge in mst]
     filename = 0
@@ -675,13 +725,38 @@ def callPrims(g, nodeCOunt):
 def callDijkstra(g, nodeCount):
     startingNode = '0'
     data, mst = dijkstras(g, startingNode)
+
+    timestampstart = datetime.datetime.now().timestamp() 
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"graph_{timestamp}.png"
     filenameMST = f"graphMST_{timestamp}.png"
+    filenameIteration = []
+    nodes = [(t[2], t[3]) for t in data]
+
+    colors = getColors(nodes, len(data))
+
+    for i in range(len(data)):
+        filenameIteration.append(f"{i}graph_{timestamp}.png")
+        graphIteration(g, filenameIteration[i], colors[i])
+
+    
     pos = build_and_save_graph(g, filename)
+
+
+
+
     if mst is not None:
         build_and_save_graph(g, filenameMST, mst, pos=pos)
-    return data, nodeCount, startingNode, filename, filenameMST
+    
+
+    timestampend = datetime.datetime.now().timestamp() 
+
+    timestampNet = timestampend - timestampstart
+
+    print(timestampNet)
+    return data, nodeCount, startingNode, filename, filenameMST, filenameIteration
+
+
 
 def callCountSort(numbers):
     data = countSort(numbers)
@@ -791,7 +866,7 @@ def build_and_save_graph(graph_data, filename, mst_edges=None, pos=None):
     
     if not os.path.exists(directory):
         os.makedirs(directory)
-    
+    ax.set_axis_off()
     filepath = os.path.join(directory, filename)
     plt.savefig(filepath, bbox_inches='tight', pad_inches=0, facecolor=fig.get_facecolor())
     
@@ -917,3 +992,92 @@ def to_military_time(time_tuples):
     
     return military_time_tuples
 
+
+
+def getColors(nodes, n):
+    colors = []
+    for entry in nodes: 
+        arr = [0] * n
+        first_list, second_list = entry 
+        for num in first_list:
+            index = int(num)
+            if 0 <= index < n:
+                arr[index] = 1
+        
+       
+        for num in second_list:
+            index = int(num)
+            if 0 <= index < n and arr[index] == 0:
+                arr[index] = 2
+        
+        colors.append(arr)
+    return colors
+
+
+import networkx as nx
+import matplotlib.pyplot as plt
+import os
+
+def graphIteration(graph_data, filename, colors, pos=None):
+    directory = 'graphApp/static/graphApp/images'
+    G = nx.DiGraph()
+
+    for node, edges in graph_data.items():
+        for adjacent_node, weight in edges.items():
+            G.add_edge(node, adjacent_node, weight=weight)
+    
+    if pos is None:
+        pos = nx.spring_layout(G, seed=42)
+    
+    nodes = list(G.nodes())
+    sorted_nodes = sorted(nodes) 
+    
+    node_colors_dict = {node: colors[i] for i, node in enumerate(sorted_nodes)}
+    
+
+    print("Node colors:")
+    for node in sorted_nodes:
+        print(f"Node: {node}, Assigned Color Index: {node_colors_dict[node]}")
+    
+    nx.set_node_attributes(G, node_colors_dict, 'color')
+    
+    color_map = {0: 'white', 1: 'red', 2: 'black'}
+    
+    
+    node_color_values = [color_map[G.nodes[node]['color']] for node in sorted_nodes]
+    
+    plt.figure(figsize=(12, 12))
+    fig, ax = plt.subplots(figsize=(12, 12))
+    fig.patch.set_facecolor((255/255, 253/255, 250/255, 1.0))
+    
+    ax.set_axis_off() #border
+    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_values)
+
+    print("\nNode positions and colors:")
+    for node in sorted_nodes:
+        print(f"Node: {node}, Position: {pos[node]}, Color: {node_color_values[sorted_nodes.index(node)]}")
+    
+    nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=20)
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, label_pos=0.5, font_color='black')
+   
+    nx.draw_networkx_labels(G, pos, font_size=12, font_color='white')
+
+    
+    filepath = os.path.join(directory, filename)
+    plt.savefig(filepath, bbox_inches='tight', pad_inches=0, facecolor=fig.get_facecolor())
+    
+    return pos
+
+
+def rearrange(top, bottom):
+
+    bottomInt = [int(x) for x in bottom]
+    pos = [-1] * len(bottom)
+
+    for i in range(len(top)):
+        # print(top[i])
+        pos[bottomInt[i]] = top[i]
+        # print(bottomInt[i])
+
+    return pos 

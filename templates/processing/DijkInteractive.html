@@ -1,0 +1,206 @@
+{% load static %}
+
+<style>
+    #interactive-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .image-container {
+        flex: 1;
+        text-align: center;
+    }
+
+    .arrow-button {
+        font-size: 48px; 
+        cursor: pointer;
+        padding: 50px; 
+        color: black; 
+        user-select: none;
+    }
+    
+    .arrow-button:hover {
+        color: purple; 
+    }
+
+    #prev-button {
+        display: none; /* hide the previous button on load */
+        position: absolute;
+        left: -50px; 
+    }
+
+    #next-button {
+        position: absolute;
+        right: -50px; 
+    }
+
+    #data-table-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    #data-table {
+        border-collapse: collapse;
+    }
+</style>
+
+<h2>Interactive</h2>
+<div id="interactive-container">
+    <div class="image-container">
+        <div>
+            <p>MST from source node</p>
+            <img id="graph-image" src="{% static 'graphApp/images/' %}{{ filenameState.0 }}" alt="Graph Image" style="max-width: 40%; height: auto;">
+        </div>
+    </div>
+    <i id="prev-button" class="arrow-button fas fa-arrow-left" title="Show Previous Item"></i>
+    <i id="next-button" class="arrow-button fas fa-arrow-right" title="Show Next Item"></i>
+</div>
+
+<div id="data-table-container">
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th colspan="{{ nodeCount }}">dist</th>
+                <th>open</th>
+                <th>closed</th>
+                <th colspan="{{ nodeCount }}">parent</th>
+            </tr>
+            <tr>
+                <th></th>
+                {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+                <th></th>
+                <th></th>
+                {% for item in vertexArr %}
+                    <th>{{item}}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>At Start</th>
+                {% for item in vertexArr %}
+                    {% if item == startNode %}
+                        <td>0</td>
+                    {% else %}
+                        <td>inf</td>
+                    {% endif %}
+                {% endfor %}
+                <td>{{ startNode|slice:"1:" }}</td>
+                <th></th>
+                {% for item in vertexArr %}
+                    <td>Null</td>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Initially empty body -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var data = {{ data|safe }};
+    var filenames = {{ filenameState|safe }}; /
+    var currentIndex = -1; // Start with -1
+    var rowsAdded = {}; 
+
+    // Function to render a new item
+    function renderItem(index) {
+        var tableBody = document.querySelector("#data-table tbody");
+        
+        // Clear existing rows for the current index if any
+        if (rowsAdded[index]) {
+            rowsAdded[index].forEach(row => tableBody.removeChild(row));
+        }
+        
+        var item = data[index];
+        
+        // Create a new row for the item
+        var row = document.createElement("tr");
+        
+        item.forEach(function(cell) {
+            var cellElement = document.createElement("td");
+            cellElement.textContent = cell;
+            row.appendChild(cellElement);
+        });
+        
+        tableBody.appendChild(row);
+        
+        // Store the added row
+        rowsAdded[index] = [row];
+    }
+
+    // Function to update the image
+    function updateImage(index) {
+        var image = document.getElementById("graph-image");
+        if (index >= 0 && index < filenames.length) {
+            image.src = "{% static 'graphApp/images/' %}" + filenames[index+1];
+        } else {
+            // Set a default image or hide it if index is out of range
+            image.src = "{% static 'graphApp/images/' %}" + filenames[0];
+        }
+        console.log("Image updated to:", image.src); // Debugging line
+    }
+
+    // Function to show/hide buttons based on current index
+    function updateButtonVisibility() {
+        var prevButton = document.getElementById("prev-button");
+        var nextButton = document.getElementById("next-button");
+
+        // Show/hide buttons based on the current index
+        prevButton.style.display = (currentIndex <= -1) ? "none" : "block";
+        nextButton.style.display = (currentIndex >= filenames.length - 2) ? "none" : "block";
+    }
+
+    // Function to handle showing the next item
+    function showNextItem() {
+        if (currentIndex < filenames.length - 1) {
+            currentIndex++;
+            updateImage(currentIndex);
+            // Render the new state if it's not already rendered
+            if (!rowsAdded[currentIndex]) {
+                renderItem(currentIndex);
+            }
+            updateButtonVisibility(); // Update button visibility after changing index
+        }
+    }
+
+    // Function to handle showing the previous item
+    function showPrevItem() {
+        if (currentIndex > -1) {
+            var tableBody = document.querySelector("#data-table tbody");
+            
+            // Remove the rows for the current index
+            if (rowsAdded[currentIndex]) {
+                rowsAdded[currentIndex].forEach(row => tableBody.removeChild(row));
+                delete rowsAdded[currentIndex];
+            }
+            
+            currentIndex--;
+            // Update the image based on the new index
+            if (currentIndex >= 0) {
+                updateImage(currentIndex);
+                // Render the state if it's not already rendered
+                if (!rowsAdded[currentIndex]) {
+                    renderItem(currentIndex);
+                }
+            } else {
+                // If currentIndex < 0, reset the image and do not render any rows
+                updateImage(-1); // Reset to default or placeholder image
+            }
+            updateButtonVisibility(); // Update button visibility after changing index
+        }
+    }
+
+    document.getElementById("next-button").addEventListener("click", showNextItem);
+    document.getElementById("prev-button").addEventListener("click", showPrevItem);
+
+    
+    updateButtonVisibility(); //buttons are visible on initialization
+
+</script>

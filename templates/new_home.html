@@ -178,9 +178,23 @@
       </div>
 
 
-
-      
       <div class="grid-container">
+
+
+        <div class="box" id="box666" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box666')"></div>
+            <div class="box-content">
+                <h2>Dijkstra Interactive</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=DijkstraInteractive" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="DijkstraInteractivePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
+        </div>
 
         <div class="box" id="box6" data-category="apsp">
             <div class="toggle-line" onclick="toggleForm('box6')"></div>
@@ -461,9 +475,6 @@
                 <input type="submit" value="Submit"> 
             </form>  
         </div>
-        
-
-
         <div class="box" id="box21" data-category="mst">
             <div class="toggle-line" onclick="toggleForm('box21')"></div>
             <div class="box-content">

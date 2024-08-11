@@ -23,8 +23,9 @@ def isMajority(arr, n):
             count += 1
 
     states.append(('Final', candidate, count))
+    print(count)
 
     if count > n // 2:
         return states, candidate
     else:
-        return -1
+        return states, candidate

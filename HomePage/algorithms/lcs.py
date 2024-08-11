@@ -27,6 +27,26 @@ def lcs(Y, X):
                     else:
                         table[i][j] = (table[i][j-1][0], 'L')
  
-        
-    return table
+    LCS = reconstruct_lcs(table, X)
+ 
+    return table, LCS
 
+
+
+def reconstruct_lcs(table, X):
+    lcs_sequence = []
+    m = len(X)
+    n = len(table[0]) - 3  
+    
+    i, j = m + 2, n + 2 
+    while i > 2 and j > 2:
+        if table[i][j][1] == 'D':
+            lcs_sequence.append(X[i - 3])
+            i -= 1
+            j -= 1
+        elif table[i][j][1] == 'U':
+            i -= 1
+        else:  
+            j -= 1
+    
+    return ''.join(reversed(lcs_sequence))

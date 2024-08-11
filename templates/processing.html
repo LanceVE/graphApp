@@ -84,9 +84,10 @@
             {% include "processing/quicksort.html" %}
         {% elif is_QSelect %}
             {% include "processing/quickselect.html" %}
-
         {% elif is_MIS %}
             {% include "processing/mis.html" %}
+        {% elif is_DijkInteractive %}
+            {% include "processing/DijkInteractive.html" %}
         {% endif %}
     {% endif %}
 </div>

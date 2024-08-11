@@ -61,6 +61,8 @@
             overflow: hidden;
             box-sizing: border-box; /* Ensure padding and border are included in the width */
         }
+
+
         
         .number-line .tick {
             position: absolute;
@@ -76,15 +78,23 @@
             font-size: 10px; /* Reduced font size for smaller labels */
         }
         
+        .number-line .line {
+            position: absolute;
+            height: 2px; /* Height of the line */
+            background-color: #333; /* Color of the line */
+            z-index: 0; /* Ensure lines are behind the dots */
+        }
+        
         .number-line .dot {
             position: absolute;
-            width: 8px; /* Reduced dot width */
-            height: 8px; /* Reduced dot height */
+            width: 8px; /* Dot width */
+            height: 8px; /* Dot height */
             border-radius: 50%;
-            background-color: #333; /* Added color for visibility */
+            background-color: #333; /* Dot color */
             transform: translate(-50%, -50%); /* Center the dot */
-            z-index: 1;
+            z-index: 1; /* Ensure dots are above the lines */
         }
+        
         .box ul {
             list-style-type: none;
             padding: 0;
@@ -167,117 +177,126 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Django template variables converted to JavaScript arrays
-            const data = [
-                {% for interval in data %}
-                    ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ];
-        
-            const optimal = [
-                {% for interval in optimal %}
-                    ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ];
-        
-            const totalNumberLine = document.getElementById('totalNumberLine');
-            const optimalNumberLine = document.getElementById('optimalNumberLine');
-        
-            // Convert time to minutes
-            function timeToMinutes(time) {
-                const [hours, minutes] = time.split(':').map(Number);
-                return hours * 60 + minutes;
+    // Django template variables converted to JavaScript arrays
+    const data = [
+        {% for interval in data %}
+            ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const optimal = [
+        {% for interval in optimal %}
+            ['{{ interval.0 }}', '{{ interval.1 }}']{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const totalNumberLine = document.getElementById('totalNumberLine');
+    const optimalNumberLine = document.getElementById('optimalNumberLine');
+
+    // Convert time to minutes
+    function timeToMinutes(time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    // Convert minutes to time string
+    function minutesToTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+
+    // Generate a random color
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // Create number line ticks and dots
+    function createNumberLine(container, intervals, dotClass, colorMap) {
+        const startMinutes = timeToMinutes('00:00');
+        const endMinutes = timeToMinutes('24:00');
+        const intervalMinutes = 60; // Interval for ticks
+
+        // Create ticks
+        for (let minutes = startMinutes; minutes <= endMinutes; minutes += intervalMinutes) {
+            const tick = document.createElement('div');
+            tick.className = 'tick';
+            tick.style.left = `${(minutes / endMinutes) * 100}%`;
+            container.appendChild(tick);
+
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.style.left = `${(minutes / endMinutes) * 100}%`;
+            label.textContent = minutesToTime(minutes);
+            container.appendChild(label);
+        }
+
+        // Create lines and dots for intervals
+        intervals.forEach((interval, index) => {
+            // Assign or retrieve color
+            let color;
+            if (dotClass === 'total') {
+                color = getRandomColor(); 
+                colorMap[index] = color; 
+            } else {
+                color = colorMap[index] || getRandomColor(); 
             }
-        
-            // Convert minutes to time string
-            function minutesToTime(minutes) {
-                const hours = Math.floor(minutes / 60);
-                const mins = minutes % 60;
-                return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+
+            const start = timeToMinutes(interval[0]);
+            const end = timeToMinutes(interval[1]);
+            const startPosition = (start / endMinutes) * 100;
+            const endPosition = (end / endMinutes) * 100;
+
+            // Create line for the interval
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.style.backgroundColor = color;
+            line.style.left = `${startPosition}%`;
+            line.style.width = `${endPosition - startPosition}%`;
+            line.style.bottom = dotClass === 'optimal' ? '15px' : '0px'; 
+            container.appendChild(line);
+
+            // Create dot for start of interval
+            const dotStart = document.createElement('div');
+            dotStart.className = `dot ${dotClass}`;
+            dotStart.style.backgroundColor = color;
+            dotStart.style.left = `${startPosition}%`;
+            dotStart.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; 
+            dotStart.title = `${interval[0]}`; 
+            container.appendChild(dotStart);
+
+            // Create dot for end of interval
+            const dotEnd = document.createElement('div');
+            dotEnd.className = `dot ${dotClass}`;
+            dotEnd.style.backgroundColor = color;
+            dotEnd.style.left = `${endPosition}%`;
+            dotEnd.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; 
+            dotEnd.title = `${interval[1]}`; 
+            container.appendChild(dotEnd);
+
+      
+            if (dotClass === 'total') {
+                const legendItem = document.createElement('li');
+                legendItem.innerHTML = `<span style="background-color: ${color};"></span>Interval ${index + 1}`;
+                document.getElementById('legend').appendChild(legendItem);
             }
-        
-            // Generate a random color
-            function getRandomColor() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-                return color;
-            }
-        
-            // Create number line ticks and dots
-            function createNumberLine(container, intervals, dotClass, colorMap) {
-                const startMinutes = timeToMinutes('00:00');
-                const endMinutes = timeToMinutes('24:00');
-                const intervalMinutes = 60; // Interval for ticks
-        
-                // Create ticks
-                for (let minutes = startMinutes; minutes <= endMinutes; minutes += intervalMinutes) {
-                    const tick = document.createElement('div');
-                    tick.className = 'tick';
-                    tick.style.left = `${(minutes / endMinutes) * 100}%`;
-                    container.appendChild(tick);
-        
-                    const label = document.createElement('div');
-                    label.className = 'label';
-                    label.style.left = `${(minutes / endMinutes) * 100}%`;
-                    label.textContent = minutesToTime(minutes);
-                    container.appendChild(label);
-                }
-        
-                // Create dots for intervals
-                intervals.forEach((interval, index) => {
-                    // Assign or retrieve color
-                    let color;
-                    if (dotClass === 'total') {
-                        color = getRandomColor(); // New color for total intervals
-                        colorMap[index] = color; // Store color for future reference
-                    } else {
-                        color = colorMap[index] || getRandomColor(); // Use stored color for optimal meetings
-                    }
-        
-                    const start = timeToMinutes(interval[0]);
-                    const end = timeToMinutes(interval[1]);
-                    const startPosition = (start / endMinutes) * 100;
-                    const endPosition = (end / endMinutes) * 100;
-        
-                    // Create dot for start of interval
-                    const dotStart = document.createElement('div');
-                    dotStart.className = `dot ${dotClass}`;
-                    dotStart.style.backgroundColor = color;
-                    dotStart.style.left = `${startPosition}%`;
-                    dotStart.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; // Move optimal dots higher
-                    dotStart.title = `${interval[0]}`; // Tooltip
-                    container.appendChild(dotStart);
-        
-                    // Create dot for end of interval
-                    const dotEnd = document.createElement('div');
-                    dotEnd.className = `dot ${dotClass}`;
-                    dotEnd.style.backgroundColor = color;
-                    dotEnd.style.left = `${endPosition}%`;
-                    dotEnd.style.bottom = dotClass === 'optimal' ? '20px' : '0px'; // Move optimal dots higher
-                    dotEnd.title = `${interval[1]}`; // Tooltip
-                    container.appendChild(dotEnd);
-        
-                    // Add color to legend for total intervals
-                    if (dotClass === 'total') {
-                        const legendItem = document.createElement('li');
-                        legendItem.innerHTML = `<span style="background-color: ${color};"></span>Interval ${index + 1}`;
-                        document.getElementById('legend').appendChild(legendItem);
-                    }
-                });
-            }
-        
-            // Map of index to color
-            const colorMap = {};
-        
-            // Create number line for total intervals
-            createNumberLine(totalNumberLine, data, 'total', colorMap);
-        
-            // Create number line for optimal intervals with consistent colors
-            createNumberLine(optimalNumberLine, optimal, 'optimal', colorMap);
         });
+    }
+
+    
+    const colorMap = {};
+
+    
+    createNumberLine(totalNumberLine, data, 'total', colorMap);
+
+    
+    createNumberLine(optimalNumberLine, optimal, 'optimal', colorMap);
+});
     </script>
 </body>
 </html>

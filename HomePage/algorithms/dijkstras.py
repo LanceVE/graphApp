@@ -39,13 +39,10 @@ def randomstartnode(graph):
 
 
 def build_mst(parent):
-    print("parent", parent)
     mst_edges = []
     for node, p in parent.items():
         if p is not None and p != 'Null':
             edge = (p, node)
             if edge not in mst_edges and (edge[1], edge[0]) not in mst_edges:
                 mst_edges.append(edge)
-
-    print(mst_edges)
     return mst_edges

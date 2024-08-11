@@ -15,13 +15,43 @@
     }
 
     .container {
-        background-color: #fff; 
+        background-color: rgba(255, 253, 250, 1);
         padding: 20px;
         margin: 10px;
         width: 45%;
+        border-radius: 8px; /* Adds rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
     }
-
-
+    
+    h2 {
+        font-size: 2em; /* Increases the size of the heading */
+        color: #333; /* Makes the heading color slightly darker for better contrast */
+    }
+    
+    h3 {
+        font-size: 1.5em; /* Increases the size of the success message */
+        color: #28a745; /* Green color for success message */
+    }
+    
+    .btn-primary {
+        font-size: 1.5em; /* Increases the size of the button text */
+        padding: 10px 20px; /* Adds padding for a better button size */
+        border-radius: 5px; /* Rounds the corners of the button */
+        background-color: #007bff; /* Blue color for the button */
+        color: #fff; /* White text color */
+        border: none; /* Removes the default border */
+        cursor: pointer; /* Adds a pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth transition for background color */
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+    
+    input[type="file"] {
+        font-size: 1em; /* Makes the file input text larger */
+        padding: 10px; /* Adds padding to the file input */
+    }
     .form-container.highlight {
         background-color: #f0f0f0; 
     }
@@ -41,6 +71,8 @@
         margin-top: 20px;
     }
 
+   
+   
     .text-container {
         order: 2; 
         background-color: rgba(255, 253, 250, 1);
@@ -50,6 +82,7 @@
         order: 3; 
         background-color: rgba(255, 253, 250, 1);
     }
+
 
     @media (max-width: 768px) {
         .container {
@@ -66,7 +99,7 @@
         {% csrf_token %}
         {{ form }}
         <button type="submit" class="btn btn-primary">Upload File</button>
-        <input type="hidden" name="algo" value = "{{ algo }}">
+        <input type="hidden" name="algo" value="{{ algo }}">
     </form>
     {% endif %}
     {% if readGraph %}
@@ -83,7 +116,7 @@
             <h2>Dijkstra</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="DijkNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'Kruskal' %}
         <form action="/processing/" method="post">
@@ -91,7 +124,7 @@
             <h2>Kruskal</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="KruskalNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'Knapsack' %}
         <form action="/processing/" method="post">
@@ -99,7 +132,7 @@
             <h2>Knapsack</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="KnapsackNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'KMP' %}
         <form action="/processing/" method="post">
@@ -107,7 +140,7 @@
             <h2>KMP</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="KMPNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'Interval' %}
         <form action="/processing/" method="post">
@@ -115,7 +148,7 @@
             <h2>Interval</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="IntervalNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'Bellmanford' %}
         <form action="/processing/" method="post">
@@ -123,7 +156,7 @@
             <h2>Bellmanford</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="BellmanFordNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
     {% elif algo == 'LCS' %}
@@ -132,7 +165,7 @@
             <h2>LCS</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="LCSNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
     {% elif algo == 'Huffman' %}
@@ -141,7 +174,7 @@
             <h2>Huffman</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="HuffmanNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'FloydWarshall' %}
         <form action="/processing/" method="post">
@@ -149,7 +182,7 @@
             <h2>FloydWarshall</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="FloydWarshallNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
     {% elif algo == 'BubbleSort' %}
@@ -158,7 +191,7 @@
             <h2>Bubble Sort</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="BubbleNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
     {% elif algo == 'InsertionSort' %}
@@ -167,7 +200,7 @@
             <h2>Insertion Sort</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="InsertionNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
         
     {% elif algo == 'UnionFind' %}
@@ -176,7 +209,7 @@
             <h2>UnionFind</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="UnionFindNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
     {% elif algo == 'Trie' %}
         <form action="/processing/" method="post">
@@ -184,7 +217,7 @@
             <h2>Trie</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="TrieNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
         {% elif algo == 'BWT' %}
         <form action="/processing/" method="post">
@@ -192,7 +225,7 @@
             <h2>BWT</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="BWTNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
         {% elif algo == 'Rabinkarp' %}
         <form action="/processing/" method="post">
@@ -200,7 +233,7 @@
             <h2>RabinKarp</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="RabinKarpNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
         {% elif algo == 'Prims' %}
@@ -209,7 +242,7 @@
             <h2>Prims</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="PrimsNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
 
 
@@ -219,7 +252,7 @@
             <h2>BoyerMoore</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="BoyerMooreNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
         {% elif algo == 'FisherYates' %}
         <form action="/processing/" method="post">
@@ -227,7 +260,7 @@
             <h2>FisherYates</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="FisherYatesNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form> 
         {% elif algo == 'CountSort' %}
         <form action="/processing/" method="post">
@@ -235,7 +268,7 @@
             <h2>Count Sort</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="CountNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
 
 
@@ -245,7 +278,7 @@
             <h2>Merge Sort</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="MergeNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
 
         {% elif algo == 'MaxIncrease' %}
@@ -254,7 +287,7 @@
             <h2>Max Increase</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="MaxIncreaseNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
 
 
@@ -264,7 +297,7 @@
             <h2>Quick Sort</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="QuickSortNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
 
         {% elif algo == 'QuickSelect' %}
@@ -273,7 +306,7 @@
             <h2>Quick Select</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
             <input type="hidden" name="QuickSelectNotPreset">
-            <input type="submit" value="Submit"> 
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
 
 
@@ -283,8 +316,16 @@
             {% csrf_token %}
             <h2>Max Independent Set</h2>
             <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
-            <input type="hidden" name="MISPreset">
-            <input type="submit" value="Submit"> 
+            <input type="hidden" name="MISNotPreset">
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
+        </form>
+        {% elif algo == 'DijkstraInteractive' %}
+        <form action="/processing/" method="post">
+            {% csrf_token %}
+            <h2>Dijkstra Interactive</h2>
+            <input type="hidden" name="filenameNoTxt" value="{{ filenameNoTxt }}">
+            <input type="hidden" name="DijkstraInteractiveNotPreset">
+            <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
     {% endif %}
 
@@ -295,58 +336,61 @@
 
 </div>
 {% elif not readGraph %}
-<div class="container text-container">
-    <h2>Instructions for Adjacency List File Upload:</h2>
-    <p>Where <code>x</code> is a node, <code>y</code> is the node an edge reaches from <code>x</code>, and <code>w</code> is the weight of the edge.
-    <pre>
-    x y:w y:w y:w
-    x y:w y:w
-    x y:w
-    x y:w y:w y:w y:w
-    </pre>
-    <p> For undirected graphs, ensure both directions are included.</p> For example:</p>
-    <pre>
-        1 2:3
-        2 1:3
-    </pre>
-    Example:
-    <pre>
-        0 1:5 3:10 4:9
-        1 2:2 3:3
-        2 0:4 
-        3 4:2
-        4 2:0
-    </pre>
-    <h2>Instructions for Encoding File Upload:</h2>
-    <p>List the count of each character seperated by a colon. 
-    <p>Example:
-    <pre>
-    a:5 b:9 c:12 d:13 e:16
-    </pre>
+                <div class="container text-container">
+                <h2>Instructions for Adjacency List File Upload:</h2>
+                <p>Where <code>x</code> is a node, <code>y</code> is the node an edge reaches from <code>x</code>, and <code>w</code> is the weight of the edge.
+                <p>Example:
+                <pre>
+                x y:w y:w y:w
+                x y:w y:w
+                x y:w
+                x y:w y:w y:w y:w
+                </pre>
+        
+                <h2>Instructions for Encoding File Upload:</h2>
+                <p>List the count of each character seperated by a colon. 
+                <p>Example:
+                <pre>
+                a:5 b:9 c:12 d:13 e:16
+                </pre>
+                <h2>Instructions for KMP File Upload:</h2>
+                <p>List the full text and the pattern in the next line. 
+                <p>Example:
+                <pre>
+                    ABABDABACDABABCABAB
+                    ABABCABAB
+                </pre>
 
-    <h2>Instructions for KMP File Upload:</h2>
-    <p>List the full text and the pattern in the next line. 
-    <p>Example:
-    <pre>
-        ABABDABACDABABCABAB
-        ABABCABAB
-    </pre>
+                <h2>Instructions for Interval Scheduling File Upload:</h2>
+                <p>List the start and end times sepearted by a colon.
+                <p>Example:
+                <pre>
+                    1:3 2:4 3:6 5:7 8:9 5:9
+                </pre>
+                <h2>Instructions for KMP Knapsack File Upload:</h2>
+                <p>List the max weight followed by the weights and profits of each entry. 
+                <p>Example:
+                <pre>
+                    10 2:5 3:30 5:25 4:65
+                </pre>
+                <h2>Instructions for UnionFind File Upload:</h2>
+                <p>List order of operations.
+                <p>Example:
+                <pre>
+                    MS 8
+                    U 0 1
+                    F 3
+                    F 2
+                </pre>
 
-    <h2>Instructions for Interval Scheduling File Upload:</h2>
-    <p>List the start and end times sepearted by a colon.
-    <p>Example:
-    <pre>
-        1:3 2:4 3:6 5:7 8:9 5:9
-    </pre>
-
-    <h2>Instructions for LCS File Upload:</h2>
-    <p>List the two patterns on seperate lines.
-    <p>Example:
-    <pre>
-        MZJAWXU
-        XMJYAUZ
-    </pre>
-</div>
+                <h2>Instructions for Quick Select File Upload:</h2>
+                <p>List the kth number you want to select followed by the numbers in a new line seperated by commas.  
+                <p>Example:
+                <pre>
+                    5
+                    2, 5, 8, 1, 
+                </pre>
+            </div>
 
 
 {% endif %}
