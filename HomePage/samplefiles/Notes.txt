@@ -1,6 +1,9 @@
 
 Updated to Preset/Not Preset
-Dijkstra (Verified on two graphs)
+Dijkstra 
+    -Need to fix node coloring and then copy CLRS book
+
+
 Kruskals
 0-1Knapsack 
 Floyd Warshall
@@ -23,18 +26,5 @@ Scheduling Coloring
 BellmanFord 
 
 
-TODOs
-    -Visuals for Insertion/Bubble
-        -new htmls for insertion and bubbles
 
 
-Need more?
-CountSort
-HuffmanEncoding
-Highlight the indexes in the table for quickselect/insertion/bubble
-
-
-    checked
-    insertionSort.py 
-    bubblesort.py
-    dijkstra.py

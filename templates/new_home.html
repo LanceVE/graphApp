@@ -181,20 +181,7 @@
       <div class="grid-container">
 
 
-        <div class="box" id="box666" data-category="apsp">
-            <div class="toggle-line" onclick="toggleForm('box666')"></div>
-            <div class="box-content">
-                <h2>Dijkstra Interactive</h2>
-            </div>
-            <form action="/processing/" method="post">
-                {% csrf_token %}
-                <a href="/graph/upload/?upload=DijkstraInteractive" class="home">Upload Graph</a>
-                <br></br>
-                <span>Pre-loaded:</span>
-                <input type="hidden" name="DijkstraInteractivePreset" value="preset_value">
-                <input type="submit" value="Submit"> 
-            </form>
-        </div>
+       
 
         <div class="box" id="box6" data-category="apsp">
             <div class="toggle-line" onclick="toggleForm('box6')"></div>
@@ -271,7 +258,7 @@
             </form>  
         </div>
 
-        <div class="box" id="box1" data-category="apsp">
+        {% comment %} <div class="box" id="box1" data-category="apsp">
             <div class="toggle-line" onclick="toggleForm('box1')"></div>
             <div class="box-content">
                 <h2>Dijkstra</h2>
@@ -284,6 +271,21 @@
                 <input type="hidden" name="DijkPreset" value="preset_value">
                 <input type="submit" value="Submit"> 
             </form> 
+        </div> {% endcomment %}
+
+        <div class="box" id="box666" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box666')"></div>
+            <div class="box-content">
+                <h2>NOT DONE Dijkstra Interactive</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=DijkstraInteractive" class="home">Upload Graph</a>
+                <br></br>
+                <span>Pre-loaded:</span>
+                <input type="hidden" name="DijkstraInteractivePreset" value="preset_value">
+                <input type="submit" value="Submit"> 
+            </form>
         </div>
 
         <div class="box" id="box24" data-category="sort">

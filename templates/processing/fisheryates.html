@@ -1,31 +1,82 @@
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            {% if data %}
-                {% with data.0 as first_row %}
-                    {% for i in first_row %}
-                        <th>Index {{ forloop.counter0 }}</th>
-                    {% endfor %}
-                {% endwith %}
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        <tr>
-            <th>Randomized Positions (Back to front): {{ forloop.counter}}</th>
-            {% for item in row %}
-                <td>{{ item }}</td>
-            {% endfor %}
-
-        </tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 18px;
+            min-width
+            : 200px;
+        }
+        table, th, td {
+            border: 2px solid black;
+            padding: 8px;
+        }
+        th, td {
+            text-align: center;
+        }
+        .highlight-red {
+            background-color: red;
+            color: white;
+        }
+        .highlight-green {
+            background-color: green;
+            color: white;
+        }
+        .box-container {
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .box-container h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fisher-Yates</h1>
+    <div id="data-container">
+        {% for item in data %}
+            <div class="box-container">
+                <h2>Index {{ item.1 }} to {{ row_count }} sorted</h2>
+                <table>
+                    <tbody>
+                        <!-- Row with index labels -->
+                        <tr>
+                            <td>i</td>
+                            {% for _ in item.0 %}
+                                <td>{{ forloop.counter0 }}</td>
+                            {% endfor %}
+                        </tr>
+                        <!-- Row with value labels -->
+                        <tr>
+                            <td>arr</td>
+                            {% for value in item.0 %}
+                                {% if forloop.counter0 < item.1 %}
+                                    <td class="highlight-red">{{ value }}</td>
+                                {% else %}
+                                    <td class="highlight-green">{{ value }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         {% endfor %}
-        <td colspan="{{ row|length }}">All Sorted</td>
-        {% for item in full_Randomized %}
-                <td>{{ item }}</td>
-            {% endfor %}
-
-    </tbody>
-</table>
-
+    </div>
+</body>
+</html>

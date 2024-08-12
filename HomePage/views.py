@@ -411,22 +411,22 @@ def new_processing_view(request):
             n = n
             is_BoyerMoore = True
             return render(request, 'processing.html', {'data':data, 'is_BoyerMoore':is_BoyerMoore,  'data':data, 'numbers': numbers, 'n':range(n)})
-        elif 'FisherYatesPreset' in request.POST:
-            numbers = readNumbers('HomePage/samplefiles/fisheryates.txt')
-            n = len(numbers)
-            data = callFisherYates(numbers, n)
-            is_FisherYate = True
-            full_Randomized = data[-1]
-            return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized})
-        elif 'FisherYatesNotPreset' in request.POST:
-            filename = request.POST.get('filenameNoTxt')
-            filenametxt = filename + '.txt'
-            numbers = readNumbers('media/graph/upload/' + filenametxt)
-            n = len(numbers)
-            data = callFisherYates(numbers, n)
-            full_Randomized = data[-1]
-            is_FisherYate = True
-            return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized })
+        # elif 'FisherYatesPreset' in request.POST:
+        #     numbers = readNumbers('HomePage/samplefiles/fisheryates.txt')
+        #     n = len(numbers)
+        #     data = callFisherYates(numbers, n)
+        #     is_FisherYate = True
+        #     full_Randomized = data[-1]
+        #     return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized})
+        # elif 'FisherYatesNotPreset' in request.POST:
+        #     filename = request.POST.get('filenameNoTxt')
+        #     filenametxt = filename + '.txt'
+        #     numbers = readNumbers('media/graph/upload/' + filenametxt)
+        #     n = len(numbers)
+        #     data = callFisherYates(numbers, n)
+        #     full_Randomized = data[-1]
+        #     is_FisherYate = True
+        #     return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized })
         elif 'CountPreset' in request.POST:
             numbers = readNumbers('HomePage/samplefiles/numbers2sort.txt')
             data, countArr = callCountSort(numbers)
@@ -610,7 +610,23 @@ def new_processing_view(request):
             for i in range(nodeCount):
                 vertexArr.append("v" + str(i))
             return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'image':filename, 'imagemst':filename2, 'filenameState':filenameState})
-
+        elif 'FisherYatesPreset' in request.POST:
+            numbers = readNumbers('HomePage/samplefiles/fisheryates.txt')
+            n = len(numbers)
+            data = callFisherYates(numbers, n)
+            is_FisherYate = True
+            full_Randomized = data[-1]
+            
+            return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized, 'row_count': len(data)})
+        elif 'FisherYatesNotPreset' in request.POST:
+            filename = request.POST.get('filenameNoTxt')
+            filenametxt = filename + '.txt'
+            numbers = readNumbers('media/graph/upload/' + filenametxt)
+            n = len(numbers)
+            data = callFisherYates(numbers, n)
+            full_Randomized = data[-1]
+            is_FisherYate = True
+            return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized, 'row_count': len(data) })
     else:
         return HttpResponse('Invalid method or action')
 
@@ -1041,7 +1057,7 @@ def graphIteration(graph_data, filename, colors, pos=None):
     
     nx.set_node_attributes(G, node_colors_dict, 'color')
     
-    color_map = {0: 'white', 1: 'red', 2: 'black'}
+    color_map = {0: 'tan', 1: 'blue', 2: 'orange'}
     
     
     node_color_values = [color_map[G.nodes[node]['color']] for node in sorted_nodes]
