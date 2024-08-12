@@ -12,6 +12,7 @@ CountSort
 BoyerMoore
 Longest Increasing
 FisherYates
+    -Why isnt the pseudocode updating?
 Prims
 Max Indepdent Set
 Mergesort 

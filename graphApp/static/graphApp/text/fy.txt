@@ -1,4 +1,0 @@
-Fisher-Yates(arr, n)
-1  for i from n-1 down to 1
-2      j = random(0, i) 
-3      swap(arr[i], arr[j])
