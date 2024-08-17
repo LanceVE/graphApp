@@ -3,12 +3,12 @@ from django.conf import settings
 from .forms import numbersForm, numbersFormDijk, numbersFormKnapsack, numbersFormLCS, stringFormKMP, huffmanForm, csvForm, GraphForm
 from HomePage.algorithms.insertionSort import insertionSort
 from HomePage.algorithms.bubbleSort import bubbleSort
-from HomePage.algorithms.dijkstras import dijkstras
+from HomePage.algorithms.dijkstras import dijkstras, getDijkEdgeColors, getDijkNodeColors
 from HomePage.algorithms.knapsackDP import knapsackDP, buildTable
 from HomePage.algorithms.lcs import lcs
 from HomePage.algorithms.kruskals import kruskals
 from HomePage.algorithms.prims import prims
-from HomePage.algorithms.intervalGreed import intervalGreed
+from HomePage.algorithms.intervalGreed import intervalGreed, to_military_time
 from HomePage.algorithms.kmp import kmp, compute_failure_function
 from HomePage.algorithms.bellmanford import bellmanford
 from HomePage.algorithms.floydwarshall import floydwarshall
@@ -21,10 +21,10 @@ from HomePage.algorithms.boyermoore import isMajority
 from HomePage.algorithms.fisheryates import randomize
 from HomePage.algorithms.countsort import countSort
 from HomePage.algorithms.mergesort import mergeSort
-from HomePage.algorithms.MIS import maximumindependentset
+from HomePage.algorithms.MIS import maximumindependentset, build_and_save_graphMIS
 from HomePage.algorithms.quickstuff import quicksort, quickselect
 from HomePage.algorithms.maxincreaseDP import maxincrease
-from HomePage.helper.csvreader import graphreader, graphreaderNeg, readKnapSack, read2LineText, readIntervals, readHuffman, readNumbers, readQueue, readBWT, readWords, readSelectNumbers
+from HomePage.helper.csvreader import graphreader, graphreaderNeg, readKnapSack, read2LineText, readIntervals, readHuffman, readNumbers, readQueue, readBWT, readWords, readSelectNumbers, graphreaderDijk
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import GraphModel
@@ -79,7 +79,7 @@ def upload_graph(request):
             filenameNoTxt = os.path.splitext(filename)[0]
             filename = f"{filenameNoTxt}.png"
        
-            filepath = build_and_save_graphUpload(graph, filename)
+            # filepath = build_and_save_graphUpload(graph, filename)
             filepath = os.path.join(settings.MEDIA_URL, 'graph/upload/', filename)
             return render(request, 'upload_graph.html', {
                 'form': GraphForm(), 
@@ -561,9 +561,9 @@ def new_processing_view(request):
             return render(request, 'processing.html', {'data':data, 'is_MIS': is_MIS, 'image':filename, 'imageMIS':filenameMIS })
             # 'numSets':numSets, 'sets':sets, 'uniqueEdges':uniqueEdges, 'image':filename, 'imagemst':filename2,
         elif 'DijkstraInteractivePreset' in request.POST:
-            g, nodeCount = graphreader('HomePage/samplefiles/dijkstra2.txt')
-            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount)
-            filenameState = [filename] + filenameIteration
+            g, nodeCount, startNode = graphreaderDijk('HomePage/samplefiles/dijkstra.txt')
+            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount, startNode)
+            filenameState = filenameIteration + [filename2]
             vStartNode = 'v'+ startingNode
             is_DijkInteractive = True
             nodesplit = []
@@ -583,12 +583,13 @@ def new_processing_view(request):
             vertexArr = []
             for i in range(nodeCount):
                 vertexArr.append("v" + str(i))
-            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'image':filename, 'imagemst':filename2, 'filenameState':filenameState})
+            print(filenameState)
+            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'filename':filename, 'imagemst':filename2, 'filenameState':filenameState})
         elif 'DijkstraInteractiveNotPreset' in request.POST:
             filename = request.POST.get('filenameNoTxt')
             filenametxt = filename + '.txt'
-            g, nodeCount = graphreader('media/graph/upload/' + filenametxt)
-            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount)
+            g, nodeCount, startNode = graphreaderDijk('media/graph/upload/' + filenametxt)
+            data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount, startNode)
             filenameState = [filename] + filenameIteration
             vStartNode = 'v'+ startingNode
             is_DijkInteractive = True
@@ -704,7 +705,8 @@ def callMIS(g):
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"graph_{timestamp}.png"
     filenameMIS = f"graphMIS_{timestamp}.png"
-    pos = build_and_save_graph(g, filename)
+    arr = [(i, i) for i in range(len(data))]
+    pos = build_and_save_graph(g, filename, arr)
     if data is not None:
         build_and_save_graphMIS(g, filenameMIS, data, pos=pos)
     return data, filename, filenameMIS, progress
@@ -736,41 +738,67 @@ def callPrims(g, nodeCOunt):
         build_and_save_graph(g, filenameMST, mstStr, pos=pos)
     return data, nodeCount, filename, filenameMST
 
+ 
 
+def callDijkstra(g, nodeCount, startingNodeInt):
+ 
+    startingNodeStr = str(startingNodeInt)
+    arr = [(i, 0 if i == startingNodeInt else float('inf')) for i in range(nodeCount)]
+    data, mst = dijkstras(g, startingNodeStr)
 
-def callDijkstra(g, nodeCount):
-    startingNode = '0'
-    data, mst = dijkstras(g, startingNode)
-
-    timestampstart = datetime.datetime.now().timestamp() 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    # timestampstart = datetime.datetime.now().timestamp() 
+    # timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = "test"
     filename = f"graph_{timestamp}.png"
     filenameMST = f"graphMST_{timestamp}.png"
     filenameIteration = []
     nodes = [(t[2], t[3]) for t in data]
+    
+    colors = getDijkNodeColors(nodes, len(data))
+   
+    edges = getDijkEdgeColors(data)
 
-    colors = getColors(nodes, len(data))
+    fullweights = [t[1] for t in data]
+    weights = []
+    weights = []
+    weights = []
+    for row in fullweights:
+        row_weights = [(j, value) for j, value in enumerate(row)]
+        weights.append(row_weights)
+    # Print the result
+    print("Weights")
+    for pair in weights:
+        print(pair)
 
+    print("Colors:")
+    for pair in colors:
+        print(pair)
+
+
+    print("\nEdge Colors:")
+    for pair in edges:
+        print(pair)
+
+   
     for i in range(len(data)):
         filenameIteration.append(f"{i}graph_{timestamp}.png")
-        graphIteration(g, filenameIteration[i], colors[i])
+        graphIteration(g, filenameIteration[i], colors[i], edges[i], weights[i])
 
     
-    pos = build_and_save_graph(g, filename)
-
-
+    pos = build_and_save_graph(g, filename, arr)
 
 
     if mst is not None:
-        build_and_save_graph(g, filenameMST, mst, pos=pos)
+        arr = [(i, i) for i in range(nodeCount)]
+        build_and_save_graph(g, filenameMST, arr, mst, pos=pos)
     
 
-    timestampend = datetime.datetime.now().timestamp() 
+    # timestampend = datetime.datetime.now().timestamp() 
 
-    timestampNet = timestampend - timestampstart
+    # timestampNet = timestampend - timestampstart
 
-    print(timestampNet)
-    return data, nodeCount, startingNode, filename, filenameMST, filenameIteration
+    print(len(filenameIteration))
+    return data, nodeCount, startingNodeStr, filename, filenameMST, filenameIteration
 
 
 
@@ -846,7 +874,7 @@ def graph_list(request):
     graphs = GraphModel.objects.all()
     return render(request, 'graph_list.html', {'graphs':graphs})
 
-def build_and_save_graph(graph_data, filename, mst_edges=None, pos=None):
+def build_and_save_graph(graph_data, filename, nodeWeights, mst_edges=None,  pos=None):
     directory = 'graphApp/static/graphApp/images'
     G = nx.DiGraph()
     
@@ -864,11 +892,12 @@ def build_and_save_graph(graph_data, filename, mst_edges=None, pos=None):
     ax.set_axis_off()
     
     
-    node_color_rgb = (81/255, 40/255, 132/255)
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_rgb)
+    node_color_rgb = ((250/255, 229/255, 185/255, 1.0))
+    node_edge_color_rgb = ((232/255, 162/255, 95/255, 1.0))
+    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_rgb, edgecolors= node_edge_color_rgb)
     
     if mst_edges is None:
-        nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=20)
+        nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=40)
         edge_labels = nx.get_edge_attributes(G, 'weight')
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, label_pos=0.5, font_color='black')
     else:
@@ -878,8 +907,12 @@ def build_and_save_graph(graph_data, filename, mst_edges=None, pos=None):
         filtered_edge_labels = {edge: edge_labels[edge] for edge in mst_edges if edge in edge_labels}
         nx.draw_networkx_edge_labels(G, pos, edge_labels=filtered_edge_labels, font_size=12, label_pos=0.5, font_color='black')
     
-    nx.draw_networkx_labels(G, pos, font_size=12, font_color='white')
-    
+
+    node_weights_dict = dict(nodeWeights)
+    node_weights_dict = {str(node): weight for node, weight in node_weights_dict.items()}
+    node_labels = {node: str(node_weights_dict.get(str(node), '')) for node in G.nodes()}
+
+    nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=12, font_color='black')
     if not os.path.exists(directory):
         os.makedirs(directory)
     ax.set_axis_off()
@@ -889,47 +922,6 @@ def build_and_save_graph(graph_data, filename, mst_edges=None, pos=None):
     return pos
 
 
-def build_and_save_graphMIS(graph_data, filename, highlight_nodes=None,  pos=None,):
-    directory = 'graphApp/static/graphApp/images'
-    G = nx.DiGraph()
-    
-
-    for node, edges in graph_data.items():
-        for adjacent_node, weight in edges.items():
-            G.add_edge(node, adjacent_node, weight=weight)
-    
-    if pos is None:
-        pos = nx.spring_layout(G, seed=42) 
-    
-    plt.figure(figsize=(12, 12))
-    fig, ax = plt.subplots(figsize=(12, 12))
-    fig.patch.set_facecolor((255/255, 253/255, 250/255, 1.0))
-    
-    ax.set_axis_off()
-    
-    node_color_rgb = (81/255, 40/255, 132/255) 
-    highlight_color_rgb = (255/255, 0/255, 0/255)  
-    
-    node_colors = [highlight_color_rgb if node in highlight_nodes else node_color_rgb for node in G.nodes()]
-    
-
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_colors)
-    
-
-    nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=20)
-    
-    edge_labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, label_pos=0.5, font_color='black')
-    
-    nx.draw_networkx_labels(G, pos, font_size=12, font_color='white')
-    
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    
-    filepath = os.path.join(directory, filename)
-    plt.savefig(filepath, bbox_inches='tight', pad_inches=0, facecolor=fig.get_facecolor())
-    
-    return pos
 
 def build_and_save_graphUpload(graph_data, filename):
 
@@ -1000,100 +992,89 @@ def sort_by_depth(data: List[Tuple[int, List[int]]]) -> List[Tuple[int, List[int
 
 
 
-def to_military_time(time_tuples):
-    def convert_to_military(time):
-        return f"{time:02d}:00"
 
-    military_time_tuples = [(convert_to_military(start), convert_to_military(end)) for start, end in time_tuples]
-    
-    return military_time_tuples
-
-
-
-def getColors(nodes, n):
-    colors = []
-    for entry in nodes: 
-        arr = [0] * n
-        first_list, second_list = entry 
-        for num in first_list:
-            index = int(num)
-            if 0 <= index < n:
-                arr[index] = 1
-        
-       
-        for num in second_list:
-            index = int(num)
-            if 0 <= index < n and arr[index] == 0:
-                arr[index] = 2
-        
-        colors.append(arr)
-    return colors
-
-
-import networkx as nx
-import matplotlib.pyplot as plt
-import os
-
-def graphIteration(graph_data, filename, colors, pos=None):
+def graphIteration(graph_data, filename, nodeColors, edgeColors, nodeWeights, pos=None):
     directory = 'graphApp/static/graphApp/images'
+
     G = nx.DiGraph()
 
+    # Add nodes and edges to the graph
     for node, edges in graph_data.items():
         for adjacent_node, weight in edges.items():
             G.add_edge(node, adjacent_node, weight=weight)
     
+    # Determine node positions if not provided
     if pos is None:
         pos = nx.spring_layout(G, seed=42)
     
-    nodes = list(G.nodes())
-    sorted_nodes = sorted(nodes) 
-    
-    node_colors_dict = {node: colors[i] for i, node in enumerate(sorted_nodes)}
-    
+    # Color mapping
+    mapOrange = ((230/255, 136/255, 60/255, 1.0))
+    mapTan = ((250/255, 229/255, 185/255, 1.0))
+    mapBlue = ((182/255, 223/255, 245/255, 1.0))
 
-    print("Node colors:")
-    for node in sorted_nodes:
-        print(f"Node: {node}, Assigned Color Index: {node_colors_dict[node]}")
+
+    color_map = {0: mapTan, 1: mapOrange, 2: mapBlue}
     
-    nx.set_node_attributes(G, node_colors_dict, 'color')
+    # Node colors
+    node_colors_dict = dict(nodeColors)
+
+    node_colors_dict = {str(node): color_code for node, color_code in node_colors_dict.items()}
+    node_color_values = [color_map.get(node_colors_dict.get(str(node), 0), 'grey') for node in G.nodes()]
+
+
+    # Edge colors
+    highlighted_color = 'orange'
+    default_color = 'black'
     
-    color_map = {0: 'tan', 1: 'blue', 2: 'orange'}
-    
-    
-    node_color_values = [color_map[G.nodes[node]['color']] for node in sorted_nodes]
-    
+    # Initialize all edges to default color
+    edge_colors_dict = dict.fromkeys(G.edges(), default_color)
+
+
+    converted_edge_colors = []
+    for edge in edgeColors:
+        if isinstance(edge, tuple) and len(edge) == 2:
+            converted_edge_colors.append((str(edge[0]), str(edge[1])))
+    # Set highlighted color for edges in edgeColors
+    for edge in converted_edge_colors:
+        if edge in edge_colors_dict:
+            edge_colors_dict[edge] = highlighted_color
+
+
+    # Prepare edge color values for drawing
+    edge_color_values = [edge_colors_dict[edge] for edge in G.edges()]
+
+    # Set up the plot
     plt.figure(figsize=(12, 12))
     fig, ax = plt.subplots(figsize=(12, 12))
     fig.patch.set_facecolor((255/255, 253/255, 250/255, 1.0))
     
-    ax.set_axis_off() #border
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_values)
-
-    print("\nNode positions and colors:")
-    for node in sorted_nodes:
-        print(f"Node: {node}, Position: {pos[node]}, Color: {node_color_values[sorted_nodes.index(node)]}")
+    ax.set_axis_off()
     
-    nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=20)
+    # Draw nodes
+    
+    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_values)
+    
+    # Draw edges with colors
+    nx.draw_networkx_edges(G, pos, edge_color=edge_color_values, arrows=True, arrowstyle='-|>', arrowsize=20)
+    
+    # Draw edge labels
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, label_pos=0.5, font_color='black')
-   
-    nx.draw_networkx_labels(G, pos, font_size=12, font_color='white')
+    
+    # Draw node labels
+    
+    node_weights_dict = dict(nodeWeights)
+    node_weights_dict = {str(node): weight for node, weight in node_weights_dict.items()}
+    node_labels = {node: str(node_weights_dict.get(str(node), '')) for node in G.nodes()}
+
+    nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=12, font_color='black')
+
 
     
+    # Save the figure
     filepath = os.path.join(directory, filename)
     plt.savefig(filepath, bbox_inches='tight', pad_inches=0, facecolor=fig.get_facecolor())
+    plt.close(fig)
     
     return pos
 
-
-def rearrange(top, bottom):
-
-    bottomInt = [int(x) for x in bottom]
-    pos = [-1] * len(bottom)
-
-    for i in range(len(top)):
-        # print(top[i])
-        pos[bottomInt[i]] = top[i]
-        # print(bottomInt[i])
-
-    return pos 

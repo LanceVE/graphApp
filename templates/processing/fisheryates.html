@@ -52,17 +52,15 @@
     <div id="data-container">
         {% for item in data %}
             <div class="box-container">
-                <h2>Index {{ item.1 }} to {{ row_count }} sorted</h2>
+                <h2>Index {{ item.1 }} to {{ row_count }} Randomized</h2>
                 <table>
                     <tbody>
-                        <!-- Row with index labels -->
                         <tr>
                             <td>i</td>
                             {% for _ in item.0 %}
                                 <td>{{ forloop.counter0 }}</td>
                             {% endfor %}
                         </tr>
-                        <!-- Row with value labels -->
                         <tr>
                             <td>arr</td>
                             {% for value in item.0 %}

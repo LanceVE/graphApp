@@ -56,6 +56,22 @@
             margin: 0 30px;
             font-family: 'Playfair Display', serif; 
             line-height: 1.2; 
+            transition: text-shadow 0.3s; /* Transition only text-shadow */
+            perspective: 1000px; /* Adds perspective to the 3D effect */
+        }
+        
+        @keyframes spin-y-axis {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+        
+        .title:hover {
+            animation: spin-y-axis 3s linear infinite; /* Spins the text around the Y-axis infinitely on hover */
+           
         }
 
         .navbar .github {

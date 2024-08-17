@@ -17,6 +17,26 @@ def graphreader(file_path):
     return graph, nodeCount
 
 
+def graphreaderDijk(file_path):
+    graph = {}
+    nodeCount = 0
+    startNode = None 
+    with open(file_path, 'r') as file:
+        # Read the first line to determine the startNode
+        startNode = file.readline().strip()
+        
+        for line in file:
+            node_and_edges = line.strip().split(' ')
+            node = node_and_edges[0]
+            edges_dict = {}
+            for edge in node_and_edges[1:]:
+                end_node, weight = edge.split(':')
+                edges_dict[end_node] = int(weight)
+            graph[node] = edges_dict
+            nodeCount += 1
+    return graph, nodeCount, startNode
+
+
 def graphreaderNeg(file_path):
     graph = {}
     nodeCount = 0

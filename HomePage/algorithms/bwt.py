@@ -1,6 +1,5 @@
 def bwt(input_string):
     input_string += '$'
-
     rotations = [input_string[i:] + input_string[:i] for i in range(len(input_string))]
     rotations_tuple = tuple(rotations)
     rotations.sort()

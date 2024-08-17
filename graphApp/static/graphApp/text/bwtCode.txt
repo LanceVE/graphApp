@@ -1,0 +1,7 @@
+def bwt(input_string):
+    input_string += '$'
+    n = len(input_string)
+    rotations = [input_string[i:] + input_string[:i] for i in range(n)]
+    rotations.sort()
+    bwt_transform = ''.join(rotation[-1] for rotation in rotations)
+    return bwt_transform

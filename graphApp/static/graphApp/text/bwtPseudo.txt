@@ -1,0 +1,12 @@
+Function BWT(input_string):
+1   Append '$' to input_string
+2   Let n be the length of input_string
+3   Initialize an empty list for rotations
+4   For i from 0 to n-1:
+5        Create a rotation by taking the substring from index i to end, concatenated with the substring from start to index i
+6        Add this rotation to the list of rotations
+7   Sort the list of rotations lexicographically
+8   Initialize an empty string for bwt_transform
+9   For each rotation in sorted rotations:
+10        Append the last character of the rotation to bwt_transform
+11  Return bwt_transform

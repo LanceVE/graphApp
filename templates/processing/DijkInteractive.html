@@ -46,14 +46,23 @@
     #data-table {
         border-collapse: collapse;
     }
+
+    .closed-column {
+        background-color: blue;
+        color: white;
+    }
+
+    .open-column {
+        background-color: orange;
+        color: white;
+    }
 </style>
 
-<h2>Interactive</h2>
+
 <div id="interactive-container">
     <div class="image-container">
         <div>
-            <p>MST from source node</p>
-            <img id="graph-image" src="{% static 'graphApp/images/' %}{{ filenameState.0 }}" alt="Graph Image" style="max-width: 40%; height: auto;">
+            <img id="graph-image" src="{% static 'graphApp/images/' %}{{ filename }}" alt="Graph Image" style="max-width: 40%; height: auto;">
         </div>
     </div>
     <i id="prev-button" class="arrow-button fas fa-arrow-left" title="Show Previous Item"></i>
@@ -66,8 +75,8 @@
             <tr>
                 <th></th>
                 <th colspan="{{ nodeCount }}">dist</th>
-                <th>open</th>
-                <th>closed</th>
+                <th class="open-column">open</th>
+                <th class="closed-column">closed</th>
                 <th colspan="{{ nodeCount }}">parent</th>
             </tr>
             <tr>
@@ -105,102 +114,115 @@
 
 <script>
     var data = {{ data|safe }};
-    var filenames = {{ filenameState|safe }}; 
-    var currentIndex = -1; // Start with -1
-    var rowsAdded = {}; 
+var filenames = {{ filenameState|safe }};
+var currentIndex = 0; // Start with the first item
+var rowsAdded = {};
 
-    // Function to render a new item
-    function renderItem(index) {
+// Function to update the image
+function updateImage(index) {
+    var image = document.getElementById("graph-image");
+    var initialSrc = "{% static 'graphApp/images/' %}{{ filename }}"; // Path to your initial image
+
+    if (index === -1) {
+        image.src = initialSrc;
+    } else if (index >= 0 && index < filenames.length) {
+        var newSrc = "{% static 'graphApp/images/' %}" + filenames[index];
+        image.src = newSrc;
+    }
+    console.log("Image updated to:", image.src);
+}
+
+// Function to update button visibility
+function updateButtonVisibility() {
+    var prevButton = document.getElementById("prev-button");
+    var nextButton = document.getElementById("next-button");
+
+    // Show next button if there are more items to show
+    nextButton.style.display = (currentIndex < filenames.length - 1) ? "block" : "none";
+
+    // Show previous button if we are not at the starting point
+    prevButton.style.display = (currentIndex > -1) ? "block" : "none";
+}
+
+// Function to render the table item
+function renderItem(index) {
+    if (!data || !data[index]) return;
+    var tableBody = document.querySelector("#data-table tbody");
+
+    // Remove existing rows for the current index if they exist
+    if (rowsAdded[index]) {
+        rowsAdded[index].forEach(row => tableBody.removeChild(row));
+        delete rowsAdded[index];
+    }
+
+    var item = data[index];
+    var row = document.createElement("tr");
+
+    item.forEach(cell => {
+        var cellElement = document.createElement("td");
+        cellElement.textContent = cell;
+        row.appendChild(cellElement);
+    });
+
+    tableBody.appendChild(row);
+    rowsAdded[index] = [row];
+}
+
+// Function to show the next item
+function showNextItem() {
+    if (currentIndex < filenames.length - 1) {
+        // Move to next item
+        currentIndex++;
+        updateImage(currentIndex);
+
+        // Render the item if it’s the first time it's being shown
+        if (!rowsAdded[currentIndex]) {
+            renderItem(currentIndex);
+        }
+
+        updateButtonVisibility();
+    }
+}
+
+// Function to show the previous item
+function showPrevItem() {
+    if (currentIndex > -1) {
         var tableBody = document.querySelector("#data-table tbody");
-        
-        // Clear existing rows for the current index if any
-        if (rowsAdded[index]) {
-            rowsAdded[index].forEach(row => tableBody.removeChild(row));
+
+        // Remove the current rows
+        if (rowsAdded[currentIndex]) {
+            rowsAdded[currentIndex].forEach(row => tableBody.removeChild(row));
+            delete rowsAdded[currentIndex];
         }
-        
-        var item = data[index];
-        
-        // Create a new row for the item
-        var row = document.createElement("tr");
-        
-        item.forEach(function(cell) {
-            var cellElement = document.createElement("td");
-            cellElement.textContent = cell;
-            row.appendChild(cellElement);
-        });
-        
-        tableBody.appendChild(row);
-        
-        // Store the added row
-        rowsAdded[index] = [row];
-    }
 
-    // Function to update the image
-    function updateImage(index) {
-        var image = document.getElementById("graph-image");
-        if (index >= 0 && index < filenames.length) {
-            image.src = "{% static 'graphApp/images/' %}" + filenames[index+1];
-        } else {
-            // Set a default image or hide it if index is out of range
-            image.src = "{% static 'graphApp/images/' %}" + filenames[0];
-        }
-        console.log("Image updated to:", image.src); // Debugging line
-    }
+        currentIndex--;
 
-    // Function to show/hide buttons based on current index
-    function updateButtonVisibility() {
-        var prevButton = document.getElementById("prev-button");
-        var nextButton = document.getElementById("next-button");
-
-        // Show/hide buttons based on the current index
-        prevButton.style.display = (currentIndex <= -1) ? "none" : "block";
-        nextButton.style.display = (currentIndex >= filenames.length - 2) ? "none" : "block";
-    }
-
-    // Function to handle showing the next item
-    function showNextItem() {
-        if (currentIndex < filenames.length - 1) {
-            currentIndex++;
+        // Reset to the initial state if moving before the first item
+        if (currentIndex === -1) {
             updateImage(currentIndex);
-            // Render the new state if it's not already rendered
+        } else if (currentIndex >= 0) {
             if (!rowsAdded[currentIndex]) {
                 renderItem(currentIndex);
             }
-            updateButtonVisibility(); // Update button visibility after changing index
+            updateImage(currentIndex);
         }
+
+        updateButtonVisibility();
     }
+}
 
-    // Function to handle showing the previous item
-    function showPrevItem() {
-        if (currentIndex > -1) {
-            var tableBody = document.querySelector("#data-table tbody");
-            
-            // Remove the rows for the current index
-            if (rowsAdded[currentIndex]) {
-                rowsAdded[currentIndex].forEach(row => tableBody.removeChild(row));
-                delete rowsAdded[currentIndex];
-            }
-            
-            currentIndex--;
-            // Update the image based on the new index
-            if (currentIndex >= 0) {
-                updateImage(currentIndex);
-                // Render the state if it's not already rendered
-                if (!rowsAdded[currentIndex]) {
-                    renderItem(currentIndex);
-                }
-            } else {
-                // If currentIndex < 0, reset the image and do not render any rows
-                updateImage(-1); // Reset to default or placeholder image
-            }
-            updateButtonVisibility(); // Update button visibility after changing index
-        }
+// Initialize on page load
+window.onload = function() {
+    // Start with the initial state
+    currentIndex = -1;
+    updateImage(currentIndex);
+    if (!rowsAdded[currentIndex]) {
+        renderItem(currentIndex);
     }
+    updateButtonVisibility();
+};
 
-    document.getElementById("next-button").addEventListener("click", showNextItem);
-    document.getElementById("prev-button").addEventListener("click", showPrevItem);
-
-    
-    updateButtonVisibility(); //buttons are visible on initialization
-
+// Add event listeners to buttons
+document.getElementById("next-button").addEventListener("click", showNextItem);
+document.getElementById("prev-button").addEventListener("click", showPrevItem);
 </script>

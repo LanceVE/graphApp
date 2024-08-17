@@ -2,7 +2,7 @@
 {% load static %}
 <style>
     body {
-        background-color: rgba(81, 40, 132);
+        background: linear-gradient(135deg, rgba(81, 40, 132, 1) 0%, rgba(123, 75, 195, 1) 100%);
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
@@ -40,6 +40,7 @@
         top: 10px;
         cursor: pointer;
         font-size: 16px;
+        font-weight: bold;
         color: black;
         background-color: rgba(208,193,251);
         border: 2px solid black;
@@ -65,7 +66,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: #fff;
+        background-color: rgba(255, 253, 250);
         border: 2px solid #000;
         border-radius: 8px;
         padding: 50px;
@@ -102,7 +103,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.25);
         z-index: 999;
     }
 </style>
@@ -224,13 +225,13 @@
                 {% elif is_Trie %}
                     fileName = 'Trie.txt';
                 {% elif is_BWT %}
-                    fileName = 'BWT.txt';
+                    fileName = STATIC_URL + 'graphApp/text/bwtPseudo.txt';
                 {% elif is_BoyerMoore %}
                     fileName = 'BoyerMoore.txt';
                 {% elif is_RK %}
                     fileName = 'RK.txt';
                 {% elif is_FisherYate %}
-                    fileName = STATIC_URL + 'graphApp/text/fy.txt';
+                    fileName = STATIC_URL + 'graphApp/text/fyPseudo.txt';
                 {% elif is_CountSort %}
                     fileName = 'CountSort.txt';
                 {% elif is_MergeSort %}
@@ -244,7 +245,7 @@
                 {% elif is_MIS %}
                     fileName = 'MIS.txt';
                 {% elif is_DijkInteractive %}
-                    fileName = STATIC_URL + 'graphApp/text/dijk.txt';
+                    fileName = STATIC_URL + 'graphApp/text/dijkPseudo.txt';
                 {% endif %}
                 fetch(fileName)
                     .then(response => response.text())
@@ -256,10 +257,9 @@
                     })
                     .catch(error => console.error('Error fetching file:', error));
                 break;
-            
             case 'code':
                 {% if is_Dijk %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/dijk_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/dijkCode.txt';
                 {% elif is_LCS %}
                     additionalFileName = STATIC_URL + 'graphApp/text/lcs_additional.txt';
                 {% elif is_Kruskals %}
@@ -285,7 +285,7 @@
                 {% elif is_Trie %}
                     additionalFileName = STATIC_URL + 'graphApp/text/trie_additional.txt';
                 {% elif is_BWT %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/bwt_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/bwtCode.txt';
                 {% elif is_BoyerMoore %}
                     additionalFileName = STATIC_URL + 'graphApp/text/boyerMoore_additional.txt';
                 {% elif is_RK %}
@@ -305,7 +305,7 @@
                 {% elif is_MIS %}
                     additionalFileName = STATIC_URL + 'graphApp/text/mis_additional.txt';
                 {% elif is_DijkInteractive %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/dijkInteractive_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/dijkCode.txt';
                 {% endif %}
                 fetch(additionalFileName)
                     .then(response => response.text())
@@ -345,7 +345,7 @@
             {% elif is_Trie %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/trie_description.txt';
             {% elif is_BWT %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/bwt_description.txt';
+                descriptionFileName = STATIC_URL + 'graphApp/text/bwtDescription.txt';
             {% elif is_BoyerMoore %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/boyerMoore_description.txt';
             {% elif is_RK %}
@@ -365,7 +365,7 @@
             {% elif is_MIS %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/mis_description.txt';
             {% elif is_DijkInteractive %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/dijkInteractive_description.txt';
+                descriptionFileName = STATIC_URL + 'graphApp/text/dijkDescription.txt';
             {% endif %}
             fetch(descriptionFileName)
                 .then(response => response.text())

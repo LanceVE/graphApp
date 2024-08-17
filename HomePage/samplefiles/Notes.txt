@@ -1,20 +1,17 @@
 
 Updated to Preset/Not Preset
 Dijkstra 
-    -Need to fix node coloring and then copy CLRS book
-
-
+    -Finish formating like CLRS, change node numbers to their distance and have the node id displayed near it
+    -Allow changing of Starting Node
 Kruskals
 0-1Knapsack 
 Floyd Warshall
-BWT
 CountSort
 BoyerMoore
 Longest Increasing
-FisherYates
-    -Why isnt the pseudocode updating?
 Prims
 Max Indepdent Set
+    -Got all screwed up fixing Dijkstra
 Mergesort 
 Quick-Sort 
 Quick-Select
@@ -29,3 +26,6 @@ BellmanFord
 
 
 
+
+FisherYates (DONE)
+BWT (DONE)
