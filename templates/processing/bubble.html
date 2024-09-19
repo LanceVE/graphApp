@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Visualization</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        td.highlight-red {
+            background-color: lightcoral;
+            font-weight: bold;
+        }
+        td.highlight-green {
+            background-color: lightgreen;
+            font-weight: bold;
+        }
+        caption {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <caption>Bubble Sort Visualization</caption>
+        <thead>
+            <tr>
+                {% for _ in data.0.0 %}
+                <th>Index {{ forloop.counter }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                {% for num in item.0 %}
+                <td class="{% if forloop.counter0 == item.1 or forloop.counter0 == item.2 %}
+                                {% if item.3 == 0 %}highlight-red{% elif item.3 == 1 %}highlight-green{% endif %}
+                            {% endif %}">
+                    {{ num }}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

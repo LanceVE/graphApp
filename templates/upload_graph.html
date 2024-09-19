@@ -92,13 +92,23 @@
 </style>
 {% include 'navigationbar.html' %}
 
+{{testing}}
+
 <div class="container form-container" id="formContainer">
     {% if not readGraph %}
     <h2>Upload File</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form }}
+        {{ form }} 
         <button type="submit" class="btn btn-primary">Upload File</button>
+        <input type="hidden" name="algo" value="{{ algo }}">
+    </form>
+    <form method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        {{ imageform }}
+        <br>
+        <button type="submit" class="btn btn-primary">Upload Image (Beta) </button>
         <input type="hidden" name="algo" value="{{ algo }}">
     </form>
     {% endif %}
@@ -310,7 +320,6 @@
         </form>
 
 
-
         {% elif algo == 'MaxIndependentSet' %}
         <form action="/processing/" method="post">
             {% csrf_token %}
@@ -328,9 +337,6 @@
             <input type="submit" value="Submit" style="width: 100%; padding: 15px; font-size: 16px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
         </form>
     {% endif %}
-
-
-
 
 
 

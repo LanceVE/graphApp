@@ -17,7 +17,7 @@ def graphreader(file_path):
     return graph, nodeCount
 
 
-def graphreaderDijk(file_path):
+def graphreaderStartNode(file_path):
     graph = {}
     nodeCount = 0
     startNode = None 

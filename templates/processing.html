@@ -11,7 +11,7 @@
     .content-container {
         position: relative; /* Required for positioning the icons */
         margin: 100px auto 20px; 
-        padding: 21px;
+        padding: 40px 21px 21px; 
         background-color: rgba(255, 253, 250); 
         border: 1px solid black;
         border-radius: 8px;
@@ -35,9 +35,14 @@
         font-size: 18px;
     }
 
+    .info-icons-container {
+        display: flex; /* Use Flexbox for layout */
+        justify-content: flex-front; /* Align icons to the end of the container */
+        margin-bottom: 20px; /* Add some margin at the bottom */
+    }
+
     .info-icon {
         right: 10px;
-        top: 10px;
         cursor: pointer;
         font-size: 16px;
         font-weight: bold;
@@ -110,9 +115,11 @@
 
 {% include 'navigationbar.html' %}
 <div class="content-container">
-    <span class="info-icon description" onclick="showPopup('description')">Description</span>
-    <span class="info-icon" onclick="showPopup('pseudocode')">Pseudo-Code</span>
-    <span class="info-icon new" onclick="showPopup('code')">Python Code</span>
+    <div class="info-icons-container">
+        <span class="info-icon description" onclick="showPopup('description')">Description</span>
+        <span class="info-icon" onclick="showPopup('pseudocode')">Pseudo-Code</span>
+        <span class="info-icon new" onclick="showPopup('code')">Python Code</span>
+    </div>
     {% if is_sorted %}
     <p class="message">The list is sorted.</p>
     {% else %}
@@ -134,8 +141,8 @@
             {% include "processing/KMP.html" %}
         {% elif is_FloydWarshall %}
             {% include "processing/floydwarshall.html" %}
-        {% elif is_sort %}
-            {% include "processing/sort.html" %}
+        {% elif is_bubble %}
+            {% include "processing/bubble.html" %}
         {% elif is_Knapsack %}
             {% include "processing/knapsack.html" %}
         {% elif is_UnionFind %}
@@ -164,6 +171,8 @@
             {% include "processing/mis.html" %}
         {% elif is_DijkInteractive %}
             {% include "processing/DijkInteractive.html" %}
+        {% elif is_BFInteractive %}
+            {% include "processing/BFInteractive.html" %}
         {% endif %}
     {% endif %}
 </div>
@@ -213,11 +222,11 @@
                 {% elif is_IntervalGreed %}
                     fileName = 'IntervalGreed.txt';
                 {% elif is_KMP %}
-                    fileName = 'KMP.txt';
+                    fileName = STATIC_URL + 'graphApp/text/kmpPseudo.txt';
                 {% elif is_FloydWarshall %}
                     fileName = 'FloydWarshall.txt';
-                {% elif is_sort %}
-                    fileName = 'sort.txt';
+                {% elif is_bubble %}
+                    fileName = STATIC_URL + 'graphApp/text/bubblePseudo.txt';
                 {% elif is_Knapsack %}
                     fileName = 'Knapsack.txt';
                 {% elif is_UnionFind %}
@@ -227,7 +236,7 @@
                 {% elif is_BWT %}
                     fileName = STATIC_URL + 'graphApp/text/bwtPseudo.txt';
                 {% elif is_BoyerMoore %}
-                    fileName = 'BoyerMoore.txt';
+                    fileName = STATIC_URL + 'graphApp/text/bmPseudo.txt';
                 {% elif is_RK %}
                     fileName = 'RK.txt';
                 {% elif is_FisherYate %}
@@ -235,7 +244,7 @@
                 {% elif is_CountSort %}
                     fileName = 'CountSort.txt';
                 {% elif is_MergeSort %}
-                    fileName = 'MergeSort.txt';
+                    fileName = STATIC_URL + 'graphApp/text/msPseudo.txt';
                 {% elif is_MaxIncrease %}
                     fileName = 'MaxIncrease.txt';
                 {% elif is_QS %}
@@ -246,6 +255,8 @@
                     fileName = 'MIS.txt';
                 {% elif is_DijkInteractive %}
                     fileName = STATIC_URL + 'graphApp/text/dijkPseudo.txt';
+                {% elif is_BFInteractive %}
+                    fileName = STATIC_URL + 'graphApp/text/BFPseudo.txt';
                 {% endif %}
                 fetch(fileName)
                     .then(response => response.text())
@@ -273,11 +284,11 @@
                 {% elif is_IntervalGreed %}
                     additionalFileName = STATIC_URL + 'graphApp/text/intervalGreed_additional.txt';
                 {% elif is_KMP %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/kmp_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/kmpCode.txt';
                 {% elif is_FloydWarshall %}
                     additionalFileName = STATIC_URL + 'graphApp/text/floydWarshall_additional.txt';
-                {% elif is_sort %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/sort_additional.txt';
+                {% elif is_bubble %}
+                    additionalFileName = STATIC_URL + 'graphApp/text/bubbleCode.txt';
                 {% elif is_Knapsack %}
                     additionalFileName = STATIC_URL + 'graphApp/text/knapsack_additional.txt';
                 {% elif is_UnionFind %}
@@ -287,7 +298,7 @@
                 {% elif is_BWT %}
                     additionalFileName = STATIC_URL + 'graphApp/text/bwtCode.txt';
                 {% elif is_BoyerMoore %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/boyerMoore_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/bmCode.txt';
                 {% elif is_RK %}
                     additionalFileName = STATIC_URL + 'graphApp/text/rk_additional.txt';
                 {% elif is_FisherYate %}
@@ -295,7 +306,7 @@
                 {% elif is_CountSort %}
                     additionalFileName = STATIC_URL + 'graphApp/text/countSort_additional.txt';
                 {% elif is_MergeSort %}
-                    additionalFileName = STATIC_URL + 'graphApp/text/mergeSort_additional.txt';
+                    additionalFileName = STATIC_URL + 'graphApp/text/msCode.txt';
                 {% elif is_MaxIncrease %}
                     additionalFileName = STATIC_URL + 'graphApp/text/maxIncrease_additional.txt';
                 {% elif is_QS %}
@@ -306,6 +317,8 @@
                     additionalFileName = STATIC_URL + 'graphApp/text/mis_additional.txt';
                 {% elif is_DijkInteractive %}
                     additionalFileName = STATIC_URL + 'graphApp/text/dijkCode.txt';
+                {% elif is_BFInteractive %}
+                    additionalFileName = STATIC_URL + 'graphApp/text/BFCode.txt';
                 {% endif %}
                 fetch(additionalFileName)
                     .then(response => response.text())
@@ -333,11 +346,11 @@
             {% elif is_IntervalGreed %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/intervalGreed_description.txt';
             {% elif is_KMP %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/kmp_description.txt';
+                descriptionFileName = STATIC_URL + 'graphApp/text/kmpDescription.txt';
             {% elif is_FloydWarshall %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/floydWarshall_description.txt';
-            {% elif is_sort %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/sort_description.txt';
+            {% elif is_bubble %}
+                descriptionFileName = STATIC_URL + 'graphApp/text/bubbleDescription.txt';
             {% elif is_Knapsack %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/knapsack_description.txt';
             {% elif is_UnionFind %}
@@ -347,7 +360,7 @@
             {% elif is_BWT %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/bwtDescription.txt';
             {% elif is_BoyerMoore %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/boyerMoore_description.txt';
+                descriptionFileName = STATIC_URL + 'graphApp/text/bmDescription.txt';
             {% elif is_RK %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/rk_description.txt';
             {% elif is_FisherYate %}
@@ -355,7 +368,7 @@
             {% elif is_CountSort %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/countSort_description.txt';
             {% elif is_MergeSort %}
-                descriptionFileName = STATIC_URL + 'graphApp/text/mergeSort_description.txt';
+                descriptionFileName = STATIC_URL + 'graphApp/text/msDescription.txt';
             {% elif is_MaxIncrease %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/maxIncrease_description.txt';
             {% elif is_QS %}
@@ -366,6 +379,8 @@
                 descriptionFileName = STATIC_URL + 'graphApp/text/mis_description.txt';
             {% elif is_DijkInteractive %}
                 descriptionFileName = STATIC_URL + 'graphApp/text/dijkDescription.txt';
+            {% elif is_BFInteractive %}
+                descriptionFileName = STATIC_URL + 'graphApp/text/bfDescription.txt';
             {% endif %}
             fetch(descriptionFileName)
                 .then(response => response.text())

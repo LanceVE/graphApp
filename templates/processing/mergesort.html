@@ -1,19 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Sort Pyramid</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .pyramid {
+            text-align: center;
+            margin-top: 20px;
+            
+        }
+        .level {
+            margin: 10px 0;
+            padding: 10;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+        .level li {
+  
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 50px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .level-item {
+            background-color: rgba(208,193,251);
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
 <body>
-    <h1>Data Table</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Depth</th>
-                <th>Values</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for depth, values in sortDepth %}
-                <tr>
-                    <td>{{ depth }}</td>
-                    <td>{{ values|join:", " }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1>Merge Sort Pyramid</h1>
+    <div class="pyramid">
+        {% for depth, items in result_with_index %}
+            <ul class="level">
+                {% for item in items %}
+                    <li class="level-item">{{ item }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        {% for depth, items in test_with_index %}
+            <ul class="level">
+                {% for item in items %}
+                    <li class="level-item">{{ item }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
 </body>
+</html>

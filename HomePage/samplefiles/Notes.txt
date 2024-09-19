@@ -7,25 +7,37 @@ Kruskals
 0-1Knapsack 
 Floyd Warshall
 CountSort
-BoyerMoore
 Longest Increasing
 Prims
 Max Indepdent Set
     -Got all screwed up fixing Dijkstra
-Mergesort 
+
 Quick-Sort 
 Quick-Select
 Huffman
-KMP
+
 LCS 
 UnionFind
 RabinKarp
+
 Scheduling Coloring
+
+
+
 BellmanFord 
+    -Need to get node and edge colors per iteartion(update dijkstra code)
+    -STATES STILL NOT WORKING
 
 
 
 
+
+
+BWT (DONE)
 
 FisherYates (DONE)
-BWT (DONE)
+KMP (Done except needs pseudocode)
+Bubble Sort (Done except needs pseudocode)
+BoyerMoore (Done except needs pseudocode)
+Mergesort  (done except needs pseudocode)
+    -NOT WORKING IF DUPLICATE ENTRIES IN A SORTED LIST NEED TO ADDRESS LATER

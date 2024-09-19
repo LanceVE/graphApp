@@ -1,0 +1,230 @@
+{% load static %}
+{{data}}
+<style>
+    #interactive-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .image-container {
+        flex: 1;
+        text-align: center;
+    }
+
+    .arrow-button {
+        font-size: 48px; 
+        cursor: pointer;
+        padding: 50px; 
+        color: black; 
+        user-select: none;
+    }
+    
+    .arrow-button:hover {
+        color: purple; 
+    }
+
+    #prev-button {
+        display: none; /* hide the previous button on load */
+        position: absolute;
+        left: -50px; 
+    }
+
+    #next-button {
+        position: absolute;
+        right: -50px; 
+    }
+
+    #data-table-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    #data-table {
+        border-collapse: collapse;
+    }
+
+    .closed-column {
+        background-color: blue;
+        color: white;
+    }
+
+    .open-column {
+        background-color: orange;
+        color: white;
+    }
+</style>
+
+
+<div id="interactive-container">
+    <div class="image-container">
+        <div>
+            <img id="graph-image" src="{% static 'graphApp/images/' %}{{ filename }}" alt="Graph Image" style="max-width: 40%; height: auto;">
+        </div>
+    </div>
+    <i id="prev-button" class="arrow-button fas fa-arrow-left" title="Show Previous Item"></i>
+    <i id="next-button" class="arrow-button fas fa-arrow-right" title="Show Next Item"></i>
+</div>
+
+<div id="data-table-container">
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th colspan="{{ nodeCount }}">dist[]</th>
+                <th>distChange?</th>
+                <th colspan="{{ nodeCount }}">parent[]</th>
+            </tr>
+
+            <tr>
+                <tr>
+                    <th></th>
+                    {% for item in vertexArr %}
+                        <th>{{item}}</th>
+                    {% endfor %}
+                <th></th>
+
+                 {% for item in vertexArr %}
+                        <th>{{item}}</th>
+                    {% endfor %}
+                </tr> 
+                <tr>
+                    <th>Start</th>
+                    {% for item in vertexArr %}
+                       {% if item == startNode %}
+                            <td>0</td>
+                        {% else %}
+                            <td>Inf</td>
+                        {% endif %}
+                    {% endfor %}
+                <th></th>
+
+                {% for item in vertexArr %}
+                        <td>Null</td>
+                    {% endfor %}
+                </tr>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Initially empty body -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+var data = {{ data|safe }};
+var filenames = {{ filenameState|safe }};
+var currentIndex = 0; // Start with the first item
+var rowsAdded = {};
+
+// Function to update the image
+function updateImage(index) {
+    var image = document.getElementById("graph-image");
+    var initialSrc = "{% static 'graphApp/images/' %}{{ filename }}"; // Path to your initial image
+
+    if (index === -1) {
+        image.src = initialSrc;
+    } else if (index >= 0 && index < filenames.length) {
+        var newSrc = "{% static 'graphApp/images/' %}" + filenames[index];
+        image.src = newSrc;
+    }
+    console.log("Image updated to:", image.src);
+}
+
+// Function to update button visibility
+function updateButtonVisibility() {
+    var prevButton = document.getElementById("prev-button");
+    var nextButton = document.getElementById("next-button");
+
+    // Show next button if there are more items to show
+    nextButton.style.display = (currentIndex < filenames.length - 1) ? "block" : "none";
+
+    // Show previous button if we are not at the starting point
+    prevButton.style.display = (currentIndex > -1) ? "block" : "none";
+}
+
+// Function to render the table item
+function renderItem(index) {
+    if (!data || !data[index]) return;
+    var tableBody = document.querySelector("#data-table tbody");
+
+    // Remove existing rows for the current index if they exist
+    if (rowsAdded[index]) {
+        rowsAdded[index].forEach(row => tableBody.removeChild(row));
+        delete rowsAdded[index];
+    }
+
+    var item = data[index];
+    var row = document.createElement("tr");
+
+    item.forEach(cell => {
+        var cellElement = document.createElement("td");
+        cellElement.textContent = cell;
+        row.appendChild(cellElement);
+    });
+
+    tableBody.appendChild(row);
+    rowsAdded[index] = [row];
+}
+
+// Function to show the next item
+function showNextItem() {
+    if (currentIndex < filenames.length - 1) {
+        // Move to next item
+        currentIndex++;
+        updateImage(currentIndex);
+
+        // Render the item if it’s the first time it's being shown
+        if (!rowsAdded[currentIndex]) {
+            renderItem(currentIndex);
+        }
+
+        updateButtonVisibility();
+    }
+}
+
+// Function to show the previous item
+function showPrevItem() {
+    if (currentIndex > -1) {
+        var tableBody = document.querySelector("#data-table tbody");
+
+        // Remove the current rows
+        if (rowsAdded[currentIndex]) {
+            rowsAdded[currentIndex].forEach(row => tableBody.removeChild(row));
+            delete rowsAdded[currentIndex];
+        }
+
+        currentIndex--;
+
+        // Reset to the initial state if moving before the first item
+        if (currentIndex === -1) {
+            updateImage(currentIndex);
+        } else if (currentIndex >= 0) {
+            if (!rowsAdded[currentIndex]) {
+                renderItem(currentIndex);
+            }
+            updateImage(currentIndex);
+        }
+
+        updateButtonVisibility();
+    }
+}
+
+// Initialize on page load
+window.onload = function() {
+    // Start with the initial state
+    currentIndex = -1;
+    updateImage(currentIndex);
+    if (!rowsAdded[currentIndex]) {
+        renderItem(currentIndex);
+    }
+    updateButtonVisibility();
+};
+
+// Add event listeners to buttons
+document.getElementById("next-button").addEventListener("click", showNextItem);
+document.getElementById("prev-button").addEventListener("click", showPrevItem);
+</script>

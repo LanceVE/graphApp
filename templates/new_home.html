@@ -183,17 +183,32 @@
 
        
 
-        <div class="box" id="box6" data-category="apsp">
-            <div class="toggle-line" onclick="toggleForm('box6')"></div>
+       <div class="box" id="box1000" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box1000')"></div>
             <div class="box-content">
-                <h2>Bellman-Ford</h2>
+                <h2>Graph File Uploader Test</h2>
             </div>
             <form action="/processing/" method="post">
                 {% csrf_token %}
-                <a href="/graph/upload/?upload=Bellmanford" class="home">Upload Graph</a>
+                <a href="/graph/upload/?upload=Graph" class="home">Upload Graph</a>
+                <br></br>
+                {% comment %} <span>Pre-loaded:</span>
+                <input type="hidden" name="BellmanFordPreset" value="preset_value">
+                <input type="submit" value="Submit">  {% endcomment %}
+            </form>
+        </div> 
+
+        <div class="box" id="box6" data-category="apsp">
+            <div class="toggle-line" onclick="toggleForm('box6')"></div>
+            <div class="box-content">
+                <h2>NOT DONE Bellman-Ford Interactive</h2>
+            </div>
+            <form action="/processing/" method="post">
+                {% csrf_token %}
+                <a href="/graph/upload/?upload=BellmanfordInteractive" class="home">Upload Graph</a>
                 <br></br>
                 <span>Pre-loaded:</span>
-                <input type="hidden" name="BellmanFordPreset" value="preset_value">
+                <input type="hidden" name="BellmanFordInteractivePreset" value="preset_value">
                 <input type="submit" value="Submit"> 
             </form>
         </div>
@@ -201,7 +216,7 @@
         <div class="box" id="box23" data-category="string">
             <div class="toggle-line" onclick="toggleForm('box23')"></div>
             <div class="box-content">
-                <h2>Boyer-Moore</h2> 
+                <h2>Boyer-Moore Voting</h2> 
             </div>
             <form action="/processing/" method="post">
                 <a href="/graph/upload/?upload=BoyerMoore" class="home">Upload Numbers</a>

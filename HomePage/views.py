@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from .forms import numbersForm, numbersFormDijk, numbersFormKnapsack, numbersFormLCS, stringFormKMP, huffmanForm, csvForm, GraphForm
+from .forms import numbersForm, numbersFormDijk, numbersFormKnapsack, numbersFormLCS, stringFormKMP, huffmanForm, csvForm, GraphForm, ImageForm
 from HomePage.algorithms.insertionSort import insertionSort
 from HomePage.algorithms.bubbleSort import bubbleSort
 from HomePage.algorithms.dijkstras import dijkstras, getDijkEdgeColors, getDijkNodeColors
@@ -20,11 +20,11 @@ from HomePage.algorithms.bwt import bwt
 from HomePage.algorithms.boyermoore import isMajority
 from HomePage.algorithms.fisheryates import randomize
 from HomePage.algorithms.countsort import countSort
-from HomePage.algorithms.mergesort import mergeSort
+from HomePage.algorithms.mergesort import mergeSort, reverse_merge_sort, swap_positions
 from HomePage.algorithms.MIS import maximumindependentset, build_and_save_graphMIS
 from HomePage.algorithms.quickstuff import quicksort, quickselect
 from HomePage.algorithms.maxincreaseDP import maxincrease
-from HomePage.helper.csvreader import graphreader, graphreaderNeg, readKnapSack, read2LineText, readIntervals, readHuffman, readNumbers, readQueue, readBWT, readWords, readSelectNumbers, graphreaderDijk
+from HomePage.helper.csvreader import graphreader, graphreaderNeg, readKnapSack, read2LineText, readIntervals, readHuffman, readNumbers, readQueue, readBWT, readWords, readSelectNumbers, graphreaderStartNode
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import GraphModel
@@ -50,21 +50,29 @@ def new_home(request):
     formKMP = stringFormKMP()
     formHuffman = huffmanForm()
     formCSV = csvForm()
-    return render(request, "new_home.html", {'form':form, 'formCSV':formCSV, 'formDijk':formDijk, 'formKnapsack': formKnapsack, 'formLCS': formLCS,'formKMP':formKMP, 'formHuffman':formHuffman , } ) 
+    formTest = stringFormKMP()
+    return render(request, "new_home.html", {'form':form, 'formCSV':formCSV, 'formDijk':formDijk, 'formKnapsack': formKnapsack, 'formLCS': formLCS,'formKMP':formKMP, 'formHuffman':formHuffman , 'formTest':formTest } ) 
 
 #Interemediate Page
 def upload_graph(request):
     if request.method == 'POST':
         form = GraphForm(request.POST, request.FILES)
+        imageform = ImageForm(request.POST, request.FILES)
+
+        print("FORM", form)
+        print("IMAGEFORM", imageform)
         full_url = request.get_full_path()
         algo = extract_value_from_url(full_url)
         displayImage = False
         updateText = False
-        if algo in ['Dijkstra','Kruskal', 'Bellmanford', 'FloydWarshall', 'Prims', 'MaxIndependentSet']:
+        if algo in ['Dijkstra','Kruskal', 'Bellmanford', 'FloydWarshall', 'Prims', 'MaxIndependentSet', 'Graph']:
             displayImage = True
             updateText = True
-        if algo in ['Knapsack','KMP', 'Huffman', 'InsertionSort', 'BubbleSort', 'UnionFind', 'Trie', 'Rabinkarp', 'FisherYate', 'CountSort', 'MergeSort']:
+        if algo in ['Knapsack','KMP', 'Huffman', 'InsertionSort', 'BubbleSort', 'UnionFind', 'Trie', 'Rabinkarp', 'FisherYate', 'CountSort', 'MergeSort',]:
             updateText = True
+       
+       
+       
         if form.is_valid():
             instance = form.save()
             url = instance.graph.path
@@ -79,10 +87,9 @@ def upload_graph(request):
             filenameNoTxt = os.path.splitext(filename)[0]
             filename = f"{filenameNoTxt}.png"
        
-            # filepath = build_and_save_graphUpload(graph, filename)
             filepath = os.path.join(settings.MEDIA_URL, 'graph/upload/', filename)
             return render(request, 'upload_graph.html', {
-                'form': GraphForm(), 
+                'form': ImageForm(), 
                 'readGraph': graph, 
                 'numNodes': numNodes,
                 'filepath': filepath,
@@ -90,19 +97,55 @@ def upload_graph(request):
                 'filenameNoTxt': filenameNoTxt,
                 'algo': algo,
                 'displayImage': displayImage,
-                'updateText': updateText
+                'updateText': updateText,
+                'imageform': ImageForm()
+              
+            })
+        elif imageform.is_valid():
+            instance = imageform.save()
+            
+            
+            url = instance.image.path
+
+            #WE HAVE THE IMAGE SAVED HERE WE NEED TO NOW TRANSLATE TO GRAPH OBJECT 
+        
+            if displayImage == True:
+                graph, numNodes = graphreader(url)
+            else:
+                numNodes = 0
+                graph = {'0': {'1': 0}}
+           
+
+            filename = os.path.basename(instance.graph.url)
+            filenameNoTxt = os.path.splitext(filename)[0]
+            filename = f"{filenameNoTxt}.png"
+       
+
+            filepath = os.path.join(settings.MEDIA_URL, 'graph/upload/', filename)
+            return render(request, 'upload_graph.html', {
+                'form': ImageForm(), 
+                'readGraph': graph, 
+                'numNodes': numNodes,
+                'filepath': filepath,
+                'filename': filename,
+                'filenameNoTxt': filenameNoTxt,
+                'algo': algo,
+                'displayImage': displayImage,
+                'updateText': updateText,
+                'imageform': ImageForm()
+              
             })
        
     else:
         form = GraphForm()
-    return render(request, 'upload_graph.html', {'form': form})
+        imageform = ImageForm()
+    return render(request, 'upload_graph.html', {'form': form, 'imageform':imageform})
 
 #Processing Page
 def new_processing_view(request):
     if request.method == 'POST':
         if 'DijkPreset' in request.POST:
             g, nodeCount = graphreader('HomePage/samplefiles/dijkstra2.txt')
-
             data, nodeCount, startingNode, filename, filename2 = callDijkstra(g, nodeCount)
             vStartNode = 'v'+ startingNode
             is_Dijk = True
@@ -274,20 +317,24 @@ def new_processing_view(request):
         elif 'BubblePreset' in request.POST:
             numbers = readNumbers('HomePage/samplefiles/numbers2sort.txt')
             numbers, data = callBubbleSort(numbers)
-            is_sort = True
+            is_bubble = True
             is_sorted = False
+
+            print(data)
             if numbers == sorted(numbers):
                 is_sorted = True
             elif numbers == sorted(numbers, reverse=True):
                 is_sorted = True
             if is_sorted == True:
                 return render(request, 'processing.html', {'is_sorted': True})
-            return render(request, 'processing.html', {'data':data, 'is_sort':is_sort, 'is_sorted':False})
+            return render(request, 'processing.html', {'data':data, 'is_bubble':is_bubble, 'is_sorted':False})
         elif 'BubbleNotPreset' in request.POST:
             filename = request.POST.get('filenameNoTxt')
             filenametxt = filename + '.txt'
             numbers = readNumbers('media/graph/upload/' + filenametxt)
             numbers, data = callBubbleSort(numbers)
+
+
             is_sort = True
             is_sorted = False
             if numbers == sorted(numbers):
@@ -297,7 +344,7 @@ def new_processing_view(request):
             if is_sorted == True:
                 return render(request, 'processing.html', {'is_sorted': True})
     
-            return render(request, 'processing.html', {'data':data, 'is_sort':is_sort, 'is_sorted':False})
+            return render(request, 'processing.html', {'data':data, 'is_bubble':is_bubble, 'is_sorted':False})
         elif 'HuffmanPreset' in request.POST:
             character, frequency = readHuffman('HomePage/samplefiles/huffman.txt')
             code_map, encoded_message, original_message = callHuffman(character, frequency)
@@ -411,22 +458,6 @@ def new_processing_view(request):
             n = n
             is_BoyerMoore = True
             return render(request, 'processing.html', {'data':data, 'is_BoyerMoore':is_BoyerMoore,  'data':data, 'numbers': numbers, 'n':range(n)})
-        # elif 'FisherYatesPreset' in request.POST:
-        #     numbers = readNumbers('HomePage/samplefiles/fisheryates.txt')
-        #     n = len(numbers)
-        #     data = callFisherYates(numbers, n)
-        #     is_FisherYate = True
-        #     full_Randomized = data[-1]
-        #     return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized})
-        # elif 'FisherYatesNotPreset' in request.POST:
-        #     filename = request.POST.get('filenameNoTxt')
-        #     filenametxt = filename + '.txt'
-        #     numbers = readNumbers('media/graph/upload/' + filenametxt)
-        #     n = len(numbers)
-        #     data = callFisherYates(numbers, n)
-        #     full_Randomized = data[-1]
-        #     is_FisherYate = True
-        #     return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized })
         elif 'CountPreset' in request.POST:
             numbers = readNumbers('HomePage/samplefiles/numbers2sort.txt')
             data, countArr = callCountSort(numbers)
@@ -468,9 +499,29 @@ def new_processing_view(request):
                 is_sorted = True
             if is_sorted == True:
                 return render(request, 'processing.html', {'is_sorted': True})
-            return render(request, 'processing.html', {'data':data, 'is_MergeSort':is_MergeSort, 'is_sorted':False, 'sortDepth':sortDepth})
+    
+            depth_dict = defaultdict(list)
+            for depth, values in sortDepth:
+                depth_dict[depth].append(values)
+            grouped_by_depth = defaultdict(list)
+
+            # Populate the dictionary
+            for depth, array in sortDepth:
+                grouped_by_depth[depth].append(array)
+
+            # Convert the dictionary to a list of lists
+            sorted_depths = sorted(grouped_by_depth.keys())
+            result = [grouped_by_depth[depth] for depth in sorted_depths]
+                
+      
+            test = reverse_merge_sort(result)
+
+            result_with_index = [(index, items) for index, items in enumerate(result)]
+            test_with_index = [(index, items) for index, items in enumerate(test)]
+            
+            
+            return render(request, 'processing.html', {'data':data, 'is_MergeSort':is_MergeSort, 'is_sorted':False, 'sortDepth':sortDepth, 'result':result, 'result_with_index':result_with_index, 'test_with_index':test_with_index})
         elif 'MergeNotPreset' in request.POST:
-            print("Inside MergeSortNotPreset")
             filename = request.POST.get('filenameNoTxt')
             filenametxt = filename + '.txt'
             numbers = readNumbers('media/graph/upload/' + filenametxt)
@@ -484,7 +535,27 @@ def new_processing_view(request):
             if is_sorted == True:
                 return render(request, 'processing.html', {'is_sorted': True})
             
-            return render(request, 'processing.html', {'data':data, 'is_MergeSort':is_MergeSort, 'is_sorted':False, 'sortDepth':sortDepth})       
+            depth_dict = defaultdict(list)
+            for depth, values in sortDepth:
+                depth_dict[depth].append(values)
+            grouped_by_depth = defaultdict(list)
+
+            # Populate the dictionary
+            for depth, array in sortDepth:
+                grouped_by_depth[depth].append(array)
+
+            # Convert the dictionary to a list of lists
+            sorted_depths = sorted(grouped_by_depth.keys())
+            result = [grouped_by_depth[depth] for depth in sorted_depths]
+                
+      
+            test = reverse_merge_sort(result)
+
+            result_with_index = [(index, items) for index, items in enumerate(result)]
+            test_with_index = [(index, items) for index, items in enumerate(test)]
+            
+
+            return render(request, 'processing.html', {'data':data, 'is_MergeSort':is_MergeSort, 'is_sorted':False, 'sortDepth':sortDepth, 'result':result, 'result_with_index':result_with_index, 'test_with_index':test_with_index})
         elif 'MaxIncreasePreset' in request.POST:
             numbers = readNumbers('HomePage/samplefiles/numbersincrease.txt')
            
@@ -561,7 +632,7 @@ def new_processing_view(request):
             return render(request, 'processing.html', {'data':data, 'is_MIS': is_MIS, 'image':filename, 'imageMIS':filenameMIS })
             # 'numSets':numSets, 'sets':sets, 'uniqueEdges':uniqueEdges, 'image':filename, 'imagemst':filename2,
         elif 'DijkstraInteractivePreset' in request.POST:
-            g, nodeCount, startNode = graphreaderDijk('HomePage/samplefiles/dijkstra.txt')
+            g, nodeCount, startNode = graphreaderStartNode('HomePage/samplefiles/dijkstra2.txt')
             data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount, startNode)
             filenameState = filenameIteration + [filename2]
             vStartNode = 'v'+ startingNode
@@ -583,14 +654,13 @@ def new_processing_view(request):
             vertexArr = []
             for i in range(nodeCount):
                 vertexArr.append("v" + str(i))
-            print(filenameState)
             return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'filename':filename, 'imagemst':filename2, 'filenameState':filenameState})
         elif 'DijkstraInteractiveNotPreset' in request.POST:
             filename = request.POST.get('filenameNoTxt')
             filenametxt = filename + '.txt'
-            g, nodeCount, startNode = graphreaderDijk('media/graph/upload/' + filenametxt)
+            g, nodeCount, startNode = graphreaderStartNode('media/graph/upload/' + filenametxt)
             data, nodeCount, startingNode, filename, filename2, filenameIteration = callDijkstra(g, nodeCount, startNode)
-            filenameState = [filename] + filenameIteration
+            filenameState = filenameIteration + [filename2]
             vStartNode = 'v'+ startingNode
             is_DijkInteractive = True
             nodesplit = []
@@ -610,14 +680,41 @@ def new_processing_view(request):
             vertexArr = []
             for i in range(nodeCount):
                 vertexArr.append("v" + str(i))
-            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'image':filename, 'imagemst':filename2, 'filenameState':filenameState})
+            return render(request, 'processing.html', {'data':data, 'nodeCount':nodeCount, 'vertexArr':vertexArr, 'startNode':vStartNode, 'is_DijkInteractive': is_DijkInteractive, 'filename':filename, 'imagemst':filename2, 'filenameState':filenameState})
+        elif 'BellmanFordInteractivePreset' in request.POST:
+          
+            g, nodeCount, startingNode = graphreaderStartNode('HomePage/samplefiles/bellmanford.txt')
+            data, nodeCount, startNode, filenameIteration, filename, filenameMST = callBellmanFord(g, nodeCount, startingNode)
+            filenameState = filenameIteration + [filenameMST]
+            vertexArr = []
+            for i in range(nodeCount):
+                vertexArr.append("v" + str(i))
+            startNode = 'v'+ startNode
+            is_BFInteractive = True
+            filename = 'graph.png'
+            filenameState = ['0graph.png', '1graph.png', '2graph.png', '3graph.png', 'graphMST.png']
+            return render(request, 'processing.html', {'data':data, 'is_BFInteractive': is_BFInteractive, 'nodeCount': nodeCount, 'vertexArr': vertexArr, 'startNode': startNode, 'filenameState':filenameState, 'filename':filename})
+        elif 'BellmanFordInteractiveNotPreset' in request.POST:
+            # NEED TO UPDATE ONCE REGULAR IS FIXED
+            filename = request.POST.get('filenameNoTxt')
+            
+            filenametxt = filename + '.txt'
+            g, nodeCount, startingNode = graphreaderStartNode('media/graph/upload/' + filenametxt)
+            data, nodeCount, startNode = callBellmanFord(g, nodeCount, startingNode)
+            vertexArr = []
+            for i in range(nodeCount):
+                vertexArr.append("v" + str(i))
+            startNode = 'v'+ startNode
+            is_BFInteractive = True
+           
+            return render(request, 'processing.html', {'data':data, 'is_BFInteractive': is_BFInteractive, 'nodeCount': nodeCount, 'vertexArr': vertexArr, 'startNode': startNode, 'filenameState':filenameState, 'filename':filename})
         elif 'FisherYatesPreset' in request.POST:
             numbers = readNumbers('HomePage/samplefiles/fisheryates.txt')
             n = len(numbers)
             data = callFisherYates(numbers, n)
             is_FisherYate = True
             full_Randomized = data[-1]
-            
+            data[-1] = (data[-1][0], 0)
             return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized, 'row_count': len(data)})
         elif 'FisherYatesNotPreset' in request.POST:
             filename = request.POST.get('filenameNoTxt')
@@ -625,7 +722,9 @@ def new_processing_view(request):
             numbers = readNumbers('media/graph/upload/' + filenametxt)
             n = len(numbers)
             data = callFisherYates(numbers, n)
+      
             full_Randomized = data[-1]
+            data[-1] = (data[-1][0], 0)
             is_FisherYate = True
             return render(request, 'processing.html', {'data':data, 'is_FisherYate':is_FisherYate,  'data':data, 'numbers': numbers, 'n':n, 'full_Randomized':full_Randomized, 'row_count': len(data) })
     else:
@@ -718,11 +817,33 @@ def callFloydWarshall(g, nodeCount):
     return data, parent, nodeListS
 
 
-def callBellmanFord(g, nodeCount):
-    startNode = '0'
-    data = bellmanford(g, startNode)
-    return data, nodeCount, startNode
+def callBellmanFord(g, nodeCount, startingNodeInt):
+    startingNodeStr = str(startingNodeInt)
+    arr = [(i, 0 if i == startingNodeInt else float('inf')) for i in range(nodeCount)]
+    
+    data, mst = bellmanford(g, startingNodeInt)
+    nodes = [t[1:1+nodeCount] for t in data]
 
+    colors = [[(0, 1), (1, 0), (2, 0), (3, 1), (4, 2)], [(0, 1), (1, 0), (2, 0), (3, 2), (4, 2)], [(0, 2), (1, 1), (2, 1), (3, 2), (4, 2)], [(0, 2), (1, 1), (2, 2), (3, 2), (4, 2)], [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]]
+    edges = [[(4, 0), (4, 3)], [], [(0, 1), (0, 2)], [(2, 1)], []]
+    filenameIteration, filename, filenameMST = buildStaticGraphsBF(g, data, nodes, nodeCount, mst, arr, colors, edges)
+    return data, nodeCount, startingNodeInt, filenameIteration, filename, filenameMST
+
+
+def callDijkstra(g, nodeCount, startingNodeInt):
+    startingNodeStr = str(startingNodeInt)
+    arr = [(i, 0 if i == startingNodeInt else float('inf')) for i in range(nodeCount)]
+    data, mst = dijkstras(g, startingNodeStr)
+    nodes = [(t[2], t[3]) for t in data]
+    print("nodes", nodes)
+    colors = getDijkNodeColors(nodes, len(data))
+    edges = getDijkEdgeColors(data)
+
+    print(colors)
+    print(edges)
+
+    filenameIteration, filename, filenameMST = buildStaticGraphs(g, data, nodes, nodeCount, mst, arr, colors, edges)
+    return data, nodeCount, startingNodeStr, filename, filenameMST, filenameIteration
 
 def callPrims(g, nodeCOunt):
     g, nodeCount = graphreader('HomePage/samplefiles/prims.txt')
@@ -737,69 +858,6 @@ def callPrims(g, nodeCOunt):
     if mstStr is not None:
         build_and_save_graph(g, filenameMST, mstStr, pos=pos)
     return data, nodeCount, filename, filenameMST
-
- 
-
-def callDijkstra(g, nodeCount, startingNodeInt):
- 
-    startingNodeStr = str(startingNodeInt)
-    arr = [(i, 0 if i == startingNodeInt else float('inf')) for i in range(nodeCount)]
-    data, mst = dijkstras(g, startingNodeStr)
-
-    # timestampstart = datetime.datetime.now().timestamp() 
-    # timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    timestamp = "test"
-    filename = f"graph_{timestamp}.png"
-    filenameMST = f"graphMST_{timestamp}.png"
-    filenameIteration = []
-    nodes = [(t[2], t[3]) for t in data]
-    
-    colors = getDijkNodeColors(nodes, len(data))
-   
-    edges = getDijkEdgeColors(data)
-
-    fullweights = [t[1] for t in data]
-    weights = []
-    weights = []
-    weights = []
-    for row in fullweights:
-        row_weights = [(j, value) for j, value in enumerate(row)]
-        weights.append(row_weights)
-    # Print the result
-    print("Weights")
-    for pair in weights:
-        print(pair)
-
-    print("Colors:")
-    for pair in colors:
-        print(pair)
-
-
-    print("\nEdge Colors:")
-    for pair in edges:
-        print(pair)
-
-   
-    for i in range(len(data)):
-        filenameIteration.append(f"{i}graph_{timestamp}.png")
-        graphIteration(g, filenameIteration[i], colors[i], edges[i], weights[i])
-
-    
-    pos = build_and_save_graph(g, filename, arr)
-
-
-    if mst is not None:
-        arr = [(i, i) for i in range(nodeCount)]
-        build_and_save_graph(g, filenameMST, arr, mst, pos=pos)
-    
-
-    # timestampend = datetime.datetime.now().timestamp() 
-
-    # timestampNet = timestampend - timestampstart
-
-    print(len(filenameIteration))
-    return data, nodeCount, startingNodeStr, filename, filenameMST, filenameIteration
-
 
 
 def callCountSort(numbers):
@@ -827,9 +885,13 @@ def callQuickSelect(k, numbers):
 
 def callMergeSort(numbers):
     original = numbers[:] 
+    print("original", )
+    test = numbers[::-1]
+    print("test",  test)
     data, depth_arrays = mergeSort(numbers)
     sortDepth = sort_by_depth(depth_arrays)
-    return data, sortDepth
+    test = remove_duplicates(sortDepth)
+    return data, test
 
 
 
@@ -883,18 +945,17 @@ def build_and_save_graph(graph_data, filename, nodeWeights, mst_edges=None,  pos
             G.add_edge(node, adjacent_node, weight=weight)
     
     if pos is None:
-        pos = nx.spring_layout(G, seed=42) 
+        pos = nx.spring_layout(G, seed=42, k = 10) 
     
     plt.figure(figsize=(12, 12))
     fig, ax = plt.subplots(figsize=(12, 12))
     fig.patch.set_facecolor((255/255, 253/255, 250/255, 1.0))
     
     ax.set_axis_off()
-    
-    
+
     node_color_rgb = ((250/255, 229/255, 185/255, 1.0))
     node_edge_color_rgb = ((232/255, 162/255, 95/255, 1.0))
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_rgb, edgecolors= node_edge_color_rgb)
+    nx.draw_networkx_nodes(G, pos, node_size=1500, node_color=node_color_rgb, edgecolors= node_edge_color_rgb)
     
     if mst_edges is None:
         nx.draw_networkx_edges(G, pos, edge_color='black', arrows=True, arrowstyle='-|>', arrowsize=40)
@@ -944,7 +1005,7 @@ def build_and_save_graphUpload(graph_data, filename):
     ax.set_axis_off()
     
     node_color_rgb = (81/255, 40/255, 132/255)
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_rgb)
+    nx.draw_networkx_nodes(G, pos, node_size=1500, node_color=node_color_rgb)
     
     # Draw only the specified edges if mst_edges is provided
 
@@ -976,17 +1037,21 @@ def extract_value_from_url(full_url):
 
 
 def sort_by_depth(data: List[Tuple[int, List[int]]]) -> List[Tuple[int, List[int]]]:
-    grouped = defaultdict(set)
+    
+    # Use a defaultdict with lists to maintain all entries
+    grouped = defaultdict(list)
     
     for item in data:
         depth, values = item
-        grouped[depth].add(tuple(values)) 
+        grouped[depth].append(values) 
     
+    # Sort depths and prepare the final sorted data
     sorted_depths = sorted(grouped.keys())
     
     sorted_data = []
     for depth in sorted_depths:
-        sorted_data.extend((depth, list(values)) for values in grouped[depth])
+        # Append all lists associated with the current depth
+        sorted_data.extend((depth, values) for values in grouped[depth])
     
     return sorted_data
 
@@ -1005,7 +1070,7 @@ def graphIteration(graph_data, filename, nodeColors, edgeColors, nodeWeights, po
     
     # Determine node positions if not provided
     if pos is None:
-        pos = nx.spring_layout(G, seed=42)
+        pos = nx.spring_layout(G, seed=42, k = 10)
     
     # Color mapping
     mapOrange = ((230/255, 136/255, 60/255, 1.0))
@@ -1052,10 +1117,10 @@ def graphIteration(graph_data, filename, nodeColors, edgeColors, nodeWeights, po
     
     # Draw nodes
     
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color=node_color_values)
+    nx.draw_networkx_nodes(G, pos, node_size=1500, node_color=node_color_values)
     
     # Draw edges with colors
-    nx.draw_networkx_edges(G, pos, edge_color=edge_color_values, arrows=True, arrowstyle='-|>', arrowsize=20)
+    nx.draw_networkx_edges(G, pos, edge_color=edge_color_values, arrows=True, arrowstyle='-|>', arrowsize=40)
     
     # Draw edge labels
     edge_labels = nx.get_edge_attributes(G, 'weight')
@@ -1066,7 +1131,7 @@ def graphIteration(graph_data, filename, nodeColors, edgeColors, nodeWeights, po
     node_weights_dict = dict(nodeWeights)
     node_weights_dict = {str(node): weight for node, weight in node_weights_dict.items()}
     node_labels = {node: str(node_weights_dict.get(str(node), '')) for node in G.nodes()}
-
+    # print(node_labels)
     nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=12, font_color='black')
 
 
@@ -1078,3 +1143,81 @@ def graphIteration(graph_data, filename, nodeColors, edgeColors, nodeWeights, po
     
     return pos
 
+
+
+def buildStaticGraphs(g, data, nodes, nodeCount, mst, arr, colors, edges):
+    filenameIteration = []
+    filename = f"graph.png"
+    filenameMST = f"graphMST.png"
+    print(data)
+    fullweights = [t[1] for t in data]
+    weights = []
+
+    print("colors", colors)
+    print("edges", edges)
+    for row in fullweights:
+        row_weights = [(j, value) for j, value in enumerate(row)]
+        weights.append(row_weights)
+   
+    for i in range(len(data)):
+        filenameIteration.append(f"{i}graph.png")
+        graphIteration(g, filenameIteration[i], colors[i], edges[i], weights[i])
+
+    
+    pos = build_and_save_graph(g, filename, arr)
+
+
+    if mst is not None:
+        arr = [(i, i) for i in range(nodeCount)]
+        build_and_save_graph(g, filenameMST, arr, mst, pos=pos)
+
+    return filenameIteration, filename, filenameMST
+    
+
+def buildStaticGraphsBF(g, data, nodes, nodeCount, mst, arr, colors, edges):
+        filenameIteration = []
+        filename = f"graph.png"
+        filenameMST = f"graphMST.png"
+        fullweights = [tuple(x for x in t[1:nodeCount]) for t in data]
+        weights = []
+        
+        for row in fullweights:
+            row_weights = [(j, value) for j, value in enumerate(row)]
+            weights.append(row_weights)
+    
+        for i in range(len(data)):
+            filenameIteration.append(f"{i}graph.png")
+            graphIteration(g, filenameIteration[i], colors[i], edges[i], weights[i])
+
+        
+        pos = build_and_save_graph(g, filename, arr)
+
+
+        if mst is not None:
+            arr = [(i, i) for i in range(nodeCount)]
+            build_and_save_graph(g, filenameMST, arr, mst, pos=pos)
+
+        return filenameIteration, filename, filenameMST
+
+
+def remove_duplicates(entries):
+    # Dictionary to keep track of unique lists and their levels
+    entry_dict = {}
+
+    for depth, content in entries:
+        # Convert list to tuple for immutability and use as a dictionary key
+        content_key = tuple(content)
+        if content_key not in entry_dict:
+            entry_dict[content_key] = [depth]
+        else:
+            # Append the depth level to the existing list
+            if depth not in entry_dict[content_key]:
+                entry_dict[content_key].append(depth)
+
+    # Rebuild the list of unique entries
+    unique_entries = []
+    for content_key, depths in entry_dict.items():
+        for depth in depths:
+            unique_entries.append((depth, list(content_key)))
+
+    return unique_entries

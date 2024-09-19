@@ -1,5 +1,5 @@
 {% load static %}
-
+{{data}}
 <style>
     #interactive-container {
         display: flex;
@@ -79,6 +79,7 @@
                 <th class="closed-column">closed</th>
                 <th colspan="{{ nodeCount }}">parent</th>
             </tr>
+
             <tr>
                 <th></th>
                 {% for item in vertexArr %}
@@ -90,6 +91,7 @@
                     <th>{{item}}</th>
                 {% endfor %}
             </tr>
+            
             <tr>
                 <th>At Start</th>
                 {% for item in vertexArr %}
@@ -113,7 +115,7 @@
 </div>
 
 <script>
-    var data = {{ data|safe }};
+var data = {{ data|safe }};
 var filenames = {{ filenameState|safe }};
 var currentIndex = 0; // Start with the first item
 var rowsAdded = {};

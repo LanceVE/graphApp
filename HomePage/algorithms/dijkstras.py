@@ -61,6 +61,8 @@ def getDijkNodeColors(nodes, n):
         
         sorted_colors = sorted(color_dict.items())
         colors.append(sorted_colors)
+
+    print(colors)
     return colors
 
 
@@ -86,4 +88,5 @@ def getDijkEdgeColors(data):
 
         highlighted_edges.append( edges_to_highlight)
 
+    print(highlighted_edges)
     return highlighted_edges

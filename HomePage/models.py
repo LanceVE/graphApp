@@ -7,7 +7,7 @@ class GraphModel(models.Model):
     def __str__(self):
         return self.title
 
-
-
-
+class ImageModel(models.Model):
+    image = models.FileField(upload_to='graph/upload/', validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
+   
 

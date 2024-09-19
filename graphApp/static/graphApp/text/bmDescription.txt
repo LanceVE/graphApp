@@ -1,0 +1,2 @@
+
+The Boyer-Moore Voting Algorithm is a highly efficient method for finding the majority element in an array—an element that appears more than half the time. It operates in two phases: first, it identifies a potential majority candidate by using a voting mechanism to balance the count of the candidate against other elements. Second, it verifies if the candidate actually appears more than half the time in the array. The algorithm achieves this with linear time complexity 𝑂(𝑛) and constant space complexity 𝑂(1), making it both fast and memory-efficient.

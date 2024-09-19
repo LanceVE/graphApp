@@ -1,5 +1,5 @@
 from django import forms
-from .models import GraphModel
+from .models import GraphModel, ImageModel
 from django.core.validators import FileExtensionValidator
 
 ALGORITHM_CHOICES = [
@@ -22,6 +22,16 @@ class GraphForm(forms.ModelForm):
    class Meta:
       model = GraphModel
       fields = ('graph', )
+
+
+class ImageForm(forms.ModelForm):
+   class Meta:
+      model = ImageModel
+      fields = ('image', )
+
+class imageForm(forms.Form):
+   file = forms.FileField()
+
 
 class numbersFormDijk(forms.Form):
     starting_node = forms.CharField(label='Starting Node', max_length=3)
