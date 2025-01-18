@@ -103,14 +103,14 @@
         <button type="submit" class="btn btn-primary">Upload File</button>
         <input type="hidden" name="algo" value="{{ algo }}">
     </form>
-    <form method="post" enctype="multipart/form-data">
+    <!-- <form method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         {{ imageform }}
         <br>
         <button type="submit" class="btn btn-primary">Upload Image (Beta) </button>
         <input type="hidden" name="algo" value="{{ algo }}">
-    </form>
+    </form> -->
     {% endif %}
     {% if readGraph %}
     <h3>File Successfully Uploaded!</h3>
